@@ -58,7 +58,7 @@ const trailValue = document.getElementById('trail-value');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
 const physicsCheck = document.getElementById('physics-check');
-const themeCheck = document.getElementById('theme-check');
+const themeBtn = document.getElementById('theme-btn');
 const compactCheck = document.getElementById('compact-check');
 const pascalCheck = document.getElementById('pascal-check');
 const pctCheck = document.getElementById('pct-check');
@@ -187,10 +187,13 @@ trailSlider.addEventListener('input', () => {
   }
 });
 
-// Theme
-themeCheck.addEventListener('change', () => {
-  document.body.classList.toggle('light', themeCheck.checked);
-  renderer.setLightMode(themeCheck.checked);
+// Theme toggle button
+let lightMode = false;
+themeBtn.addEventListener('click', () => {
+  lightMode = !lightMode;
+  document.body.classList.toggle('light', lightMode);
+  renderer.setLightMode(lightMode);
+  themeBtn.classList.toggle('active', lightMode);
 });
 
 // Toggles

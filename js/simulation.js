@@ -19,7 +19,7 @@ export class Simulation {
     this.physicsMode = true;
     this.trailLength = 10; // default trail length for all balls
     this.sequentialMode = false; // wait for previous ball to pass 2 pins before dropping next
-    this.totalBallsToSpawn = 500;
+    this.totalBallsToSpawn = 1000;
     this.totalBallsSpawned = 0;
     this.dropAccumulator = 0;
 
