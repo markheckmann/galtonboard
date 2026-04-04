@@ -194,6 +194,14 @@ canvas.addEventListener('click', (e) => {
   }
 });
 
+// --- Fullscreen ---
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+const appEl = document.querySelector('.app');
+fullscreenBtn.addEventListener('click', () => {
+  appEl.classList.toggle('fullscreen');
+  resizeCanvas();
+});
+
 // --- Info overlay ---
 const infoOverlay = document.getElementById('info-overlay');
 document.getElementById('info-btn').addEventListener('click', () => {
@@ -212,6 +220,8 @@ document.addEventListener('keydown', (e) => {
 
   if (e.code === 'Escape') {
     infoOverlay.classList.remove('visible');
+  } else if (e.code === 'KeyF') {
+    fullscreenBtn.click();
   } else if (e.code === 'Space') {
     e.preventDefault();
     playPauseBtn.click();

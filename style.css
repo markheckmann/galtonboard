@@ -463,6 +463,37 @@ button {
   height: 100%;
 }
 
+/* --- Fullscreen button --- */
+.fullscreen-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--bg-btn-secondary);
+  color: var(--text-muted);
+  font-size: 18px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  opacity: 0.5;
+  z-index: 10;
+}
+
+.fullscreen-btn:hover {
+  opacity: 1;
+}
+
+/* --- Fullscreen mode --- */
+.app.fullscreen .sidebar {
+  display: none;
+}
+
+.app.fullscreen .canvas-container {
+  width: 100%;
+}
+
+.app.fullscreen .fullscreen-btn {
+  opacity: 0.7;
+}
+
 /* --- Help text --- */
 .help-text {
   font-size: 10px;

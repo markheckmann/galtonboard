@@ -25,6 +25,9 @@ export class Simulation {
     // Bin stacks: track count per bin for stacking
     this.binStacks = new Array(board.numBins).fill(0);
 
+    // Splash effects when balls land
+    this.splashes = [];
+
     // Base duration for one hop between pins (seconds)
     this.baseHopDuration = 0.6;
 
@@ -36,6 +39,7 @@ export class Simulation {
     this.activeBalls = [];
     this.settledBalls = [];
     this.dropOneBalls = [];
+    this.splashes = [];
     this.highlightedBalls.clear();
     this.totalBallsSpawned = 0;
     this.dropAccumulator = 0;
@@ -58,6 +62,14 @@ export class Simulation {
 
   update(dt) {
     const hopDuration = this.baseHopDuration / this.speedMultiplier;
+
+    // Decay splash effects
+    for (let i = this.splashes.length - 1; i >= 0; i--) {
+      this.splashes[i].timer -= dt;
+      if (this.splashes[i].timer <= 0) {
+        this.splashes.splice(i, 1);
+      }
+    }
 
     // Expire highlighted balls 5 seconds after they settle
     for (const ball of this.highlightedBalls) {
@@ -153,6 +165,15 @@ export class Simulation {
 
     this.settledBalls.push(ball);
     this.stats.recordBall(binIndex);
+
+    // Create splash effect (store bin/stack so position adapts to rescaling)
+    this.splashes.push({
+      x: ball.settledX,
+      binIndex: binIndex,
+      stackPosition: stackPos,
+      timer: 0.4,
+      maxTimer: 0.4,
+    });
   }
 
   // Click handling: find nearest active ball

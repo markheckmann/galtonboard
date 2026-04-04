@@ -72,7 +72,7 @@ export class Renderer {
 
   draw(board, simulation, stats) {
     this.clear();
-    this.drawFunnel(board);
+    this.drawFunnel(board, simulation);
     this.drawBinWalls(board);
     if (this.showBackgroundCurve) {
       this.drawBackgroundCurve(board, simulation, stats);
@@ -92,12 +92,30 @@ export class Renderer {
     }
 
     this.drawBinCounts(board, simulation, stats);
+    this.drawSplashes(board, simulation);
   }
 
-  drawFunnel(board) {
+  drawFunnel(board, simulation) {
     const ctx = this.ctx;
     const cx = board.centerX;
     const fy = board.funnelY;
+
+    // Queued balls inside the funnel
+    const remaining = simulation.totalBallsToSpawn - simulation.totalBallsSpawned;
+    if (remaining > 0 && simulation.running) {
+      const maxVisible = Math.min(remaining, 8);
+      for (let i = 0; i < maxVisible; i++) {
+        const spread = (i / maxVisible) * 18;
+        const ballY = fy - 8 - i * board.ballRadius * 1.5;
+        const ballX = cx + (Math.sin(i * 2.3) * spread * 0.3);
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, board.ballRadius * 0.8, 0, Math.PI * 2);
+        ctx.fillStyle = this.theme.ballFill;
+        ctx.globalAlpha = 0.3 + 0.4 * (1 - i / maxVisible);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
 
     ctx.beginPath();
     ctx.moveTo(cx - 30, fy - 20);
@@ -373,6 +391,27 @@ export class Renderer {
       } else {
         ctx.fillText(count, cx, topY - 5);
       }
+    }
+  }
+
+  drawSplashes(board, simulation) {
+    const ctx = this.ctx;
+    const ballDiam = board.ballRadius * 2;
+    const scale = this._getBinScale(board, simulation);
+
+    for (const splash of simulation.splashes) {
+      const t = 1 - splash.timer / splash.maxTimer; // 0 → 1
+      const alpha = (1 - t) * 0.6;
+      const radius = board.ballRadius * (1 + t * 3);
+      const y = board.binFloorY - (splash.stackPosition + 0.5) * ballDiam * scale;
+
+      ctx.beginPath();
+      ctx.arc(splash.x, y, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = this.theme.ballFill;
+      ctx.globalAlpha = alpha;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.globalAlpha = 1;
     }
   }
 
