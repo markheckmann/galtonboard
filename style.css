@@ -328,19 +328,17 @@ button {
   accent-color: var(--accent);
 }
 
-/* --- Stats panel --- */
-.stats-panel {
-  background: var(--bg-stats);
+/* --- Stats overlay (top-left of canvas) --- */
+.stats-overlay {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--bg-sidebar);
   border-radius: 6px;
-  padding: 10px;
-}
-
-.stats-panel h3 {
-  font-size: 11px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  padding: 8px 12px;
+  z-index: 10;
+  opacity: 0.85;
+  pointer-events: none;
 }
 
 .stat-row {
@@ -348,6 +346,7 @@ button {
   justify-content: space-between;
   font-size: 12px;
   padding: 2px 0;
+  gap: 12px;
 }
 
 .stat-row .stat-label {
