@@ -2,6 +2,8 @@
 
 An interactive web-based [Galton Board](https://en.wikipedia.org/wiki/Galton_board) (bean machine) simulator for teaching probability and the Central Limit Theorem.
 
+**Live demo: [galton.markheckmann.de](https://galton.markheckmann.de)**
+
 ![Galton Board Screenshot](screenshot.png)
 
 ## What is a Galton Board?
