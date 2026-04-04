@@ -50,6 +50,7 @@ export class Renderer {
     this.showStats = true;
     this.showPercentages = false;
     this.showBackgroundCurve = false;
+    this.abbreviatePascal = false;
     this.theme = THEMES.dark;
   }
 
@@ -405,6 +406,13 @@ export class Renderer {
     ctx.setLineDash([]);
   }
 
+  _formatPascal(n) {
+    if (!this.abbreviatePascal) return String(n);
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + 'm';
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + 'k';
+    return String(n);
+  }
+
   drawPascalOverlay(board, stats) {
     const ctx = this.ctx;
     ctx.font = '9px monospace';
@@ -413,29 +421,30 @@ export class Renderer {
     for (let r = 0; r < board.numRows; r++) {
       const row = stats.getPascalRow(r);
       // Check if the widest number in this row would overlap
-      const maxText = String(Math.max(...row));
+      const maxText = this._formatPascal(Math.max(...row));
       const textWidth = ctx.measureText(maxText).width;
       const needsRotation = textWidth > board.pinSpacingX * 0.85;
 
       for (let c = 0; c <= r; c++) {
         const pin = board.pins[r][c];
+        const label = this._formatPascal(row[c]);
         if (needsRotation) {
           ctx.save();
           ctx.translate(pin.x, pin.y - board.pinRadius - 4);
           ctx.rotate(-Math.PI / 6); // -30 degrees
           ctx.textAlign = 'right';
-          ctx.fillText(row[c], 0, 0);
+          ctx.fillText(label, 0, 0);
           ctx.restore();
         } else {
           ctx.textAlign = 'center';
-          ctx.fillText(row[c], pin.x, pin.y - board.pinRadius - 4);
+          ctx.fillText(label, pin.x, pin.y - board.pinRadius - 4);
         }
       }
     }
 
     // Final row: distribution numbers centered above each bin
     const finalRow = stats.getPascalRow(board.numRows);
-    const maxFinalText = String(Math.max(...finalRow));
+    const maxFinalText = this._formatPascal(Math.max(...finalRow));
     const finalTextWidth = ctx.measureText(maxFinalText).width;
     const finalNeedsRotation = finalTextWidth > board.pinSpacingX * 0.85;
 
@@ -443,16 +452,17 @@ export class Renderer {
     for (let c = 0; c < finalRow.length; c++) {
       const bin = board.binRects[c];
       const cx = bin.x + bin.width / 2;
+      const label = this._formatPascal(finalRow[c]);
       if (finalNeedsRotation) {
         ctx.save();
         ctx.translate(cx, board.binTopY - 6);
         ctx.rotate(-Math.PI / 6);
         ctx.textAlign = 'right';
-        ctx.fillText(finalRow[c], 0, 0);
+        ctx.fillText(label, 0, 0);
         ctx.restore();
       } else {
         ctx.textAlign = 'center';
-        ctx.fillText(finalRow[c], cx, board.binTopY - 6);
+        ctx.fillText(label, cx, board.binTopY - 6);
       }
     }
   }

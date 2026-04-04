@@ -48,6 +48,7 @@ const biasSlider = document.getElementById('bias-slider');
 const biasValue = document.getElementById('bias-value');
 const biasLeft = document.getElementById('bias-left');
 const biasRight = document.getElementById('bias-right');
+const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
 const themeCheck = document.getElementById('theme-check');
 const pascalCheck = document.getElementById('pascal-check');
@@ -144,6 +145,9 @@ themeCheck.addEventListener('change', () => {
 // Toggles
 pascalCheck.addEventListener('change', () => {
   renderer.showPascal = pascalCheck.checked;
+});
+pascalAbbrCheck.addEventListener('change', () => {
+  renderer.abbreviatePascal = pascalAbbrCheck.checked;
 });
 bgCurveCheck.addEventListener('change', () => {
   renderer.showBackgroundCurve = bgCurveCheck.checked;

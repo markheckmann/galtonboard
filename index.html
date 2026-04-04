@@ -25,7 +25,7 @@
       <div class="control-group">
         <label>Pin Rows</label>
         <div class="control-row">
-          <input type="range" id="rows-slider" min="1" max="20" value="10">
+          <input type="range" id="rows-slider" min="1" max="25" value="10">
           <span class="value-display" id="rows-value">10</span>
         </div>
       </div>
@@ -91,6 +91,7 @@
       <!-- Overlay Toggles -->
       <div class="toggle-group">
         <label title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+        <label title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
         <label title="Show the theoretical bell curve shape for the total number of balls. This is the distribution the histogram will converge toward."><input type="checkbox" id="bgcurve-check"> Target Bell Curve</label>
         <label title="Show a dashed line for the expected distribution based on balls settled so far. Compare it with the actual histogram."><input type="checkbox" id="curve-check"> Expected Curve</label>
         <label title="Show percentages instead of counts above each bin."><input type="checkbox" id="pct-check"> Bin Percentages</label>

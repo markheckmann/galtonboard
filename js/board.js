@@ -99,7 +99,7 @@ export class Board {
   }
 
   setNumRows(numRows) {
-    this.numRows = Math.max(1, Math.min(20, numRows));
+    this.numRows = Math.max(1, Math.min(25, numRows));
     this.recalculate(this.canvasWidth, this.canvasHeight);
   }
 }
