@@ -372,6 +372,24 @@ document.addEventListener('keydown', (e) => {
     playPauseBtn.click();
   } else if (e.code === 'KeyR') {
     resetBtn.click();
+  } else if (e.code === 'KeyD') {
+    dropOneBtn.click();
+  } else if (e.code === 'ArrowRight') {
+    e.preventDefault();
+    speedSlider.value = Math.min(parseInt(speedSlider.max), parseInt(speedSlider.value) + 1);
+    speedSlider.dispatchEvent(new Event('input'));
+  } else if (e.code === 'ArrowLeft') {
+    e.preventDefault();
+    speedSlider.value = Math.max(parseInt(speedSlider.min), parseInt(speedSlider.value) - 1);
+    speedSlider.dispatchEvent(new Event('input'));
+  } else if (e.code === 'ArrowUp') {
+    e.preventDefault();
+    rateSlider.value = Math.min(parseInt(rateSlider.max), parseInt(rateSlider.value) + 1);
+    rateSlider.dispatchEvent(new Event('input'));
+  } else if (e.code === 'ArrowDown') {
+    e.preventDefault();
+    rateSlider.value = Math.max(parseInt(rateSlider.min), parseInt(rateSlider.value) - 1);
+    rateSlider.dispatchEvent(new Event('input'));
   }
 });
 
