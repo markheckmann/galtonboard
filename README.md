@@ -17,10 +17,11 @@ This happens because each ball's final position is the sum of many independent r
 ### Simulation Controls
 - **Pin rows** (1–25) — adjust the number of decision points
 - **L/R bias** — skew the left/right probability away from 50/50 to explore biased distributions
-- **Speed** (0.05x–8x) — slow down to watch individual bounces or speed up to see the distribution emerge
-- **Drop rate** (1–10,000 balls/sec) — exponential slider for fine control at low rates
+- **Speed** (0.05x–10x) — slow down to watch individual bounces or speed up to see the distribution emerge
+- **Drop rate** (0–10,000 balls/sec) — fine-grained steps (0.25 increments up to 2, then integers, then exponential). Set to 0 to pause spawning while the simulation continues
 - **Sequential mode** — drops balls one at a time, waiting for each to pass 2 pins
-- **Drop One Ball** — drop a single ball, even while paused
+- **Drop One Ball** — drop a single highlighted ball, even while paused
+- **+/− buttons** on all sliders for precise single-step adjustments
 
 ### Physics Mode
 Toggle between two animation styles:
@@ -34,23 +35,37 @@ Toggle between two animation styles:
 - Highlights auto-expire 5 seconds after the ball settles
 
 ### Educational Overlays
-- **Pascal's Triangle** — shows path counts at each pin (with abbreviation option for large numbers: k/m)
+- **Pascal's Triangle** — shows path counts at each pin (with abbreviation option for large numbers: k/m), adjustable font size
 - **Target Bell Curve** — faint filled curve showing the theoretical distribution the histogram will converge toward
 - **Expected Curve** — dashed line overlay scaling with settled balls for comparison
+- **Mean / Std Dev Lines** — vertical μ line and ±1σ brackets drawn directly on the histogram
 - **Bin Percentages** — toggle between counts and percentages above bins
-- **Live Statistics** — mean, standard deviation, and goodness-of-fit indicator
+- **Live Statistics** — spawned/settled counts, mean, standard deviation, and goodness-of-fit (shown as canvas overlay)
 
 ### Visual Effects
 - **Pin flash** — pins glow when balls bounce off them, creating a visible cascade
 - **Bin splash** — expanding ring pulse when balls land in bins
-- **Funnel animation** — balls visibly queue inside the funnel
+- **Trails** — configurable duration, width, and opacity. Trails stay at full opacity while the ball falls, then fade uniformly after settling
+- **Funnel animation** — balls visibly queue inside the funnel with remaining count displayed
 - **Auto-scale sizing** — optional scaling so the board fills the canvas (ideal for high row counts)
+- **Adjustable label sizes** — separate font size controls for bin counts and Pascal numbers
 
 ### Other
-- **Dark/Light mode** toggle
+- **Dark/Light mode** — toggle button on the canvas
 - **Fullscreen mode** — hide sidebar, expand canvas (button or F key)
 - **Info overlay** — explains the Galton Board, Central Limit Theorem, and the underlying math
-- **Keyboard shortcuts** — Space (play/pause), R (reset), F (fullscreen), Esc (close overlay)
+- **Shareable URLs** — all settings encoded in the URL hash for sharing configurations
+- **Progress bar** — thin bar at the top showing how many balls have been dropped
+- **Reset Settings** — button to restore all controls to defaults
+- **Keyboard shortcuts**:
+  - `Space` — play/pause
+  - `R` — reset simulation
+  - `D` — drop one highlighted ball
+  - `F` — fullscreen
+  - `←/→` — adjust speed
+  - `↑/↓` — adjust drop rate
+  - `Esc` — close overlay
+- **Tooltips** — hover over any control for an explanation
 - **Responsive layout** — two-column controls on narrow screens
 - **HiDPI support** — crisp rendering on Retina displays
 
