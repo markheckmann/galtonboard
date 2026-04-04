@@ -400,11 +400,15 @@ function updateStatsDisplay() {
   const totalEl = document.getElementById('stat-total');
   const fitEl = document.getElementById('stat-fit');
   const spawnedEl = document.getElementById('stat-spawned');
+  const speedEl = document.getElementById('stat-speed');
+  const rateEl = document.getElementById('stat-rate');
 
   meanEl.textContent = stats.totalSettled > 0 ? stats.getMean().toFixed(2) : '—';
   stddevEl.textContent = stats.totalSettled > 0 ? stats.getStdDev().toFixed(2) : '—';
   totalEl.textContent = stats.totalSettled;
   spawnedEl.textContent = simulation.totalBallsSpawned;
+  speedEl.textContent = simulation.speedMultiplier + 'x';
+  rateEl.textContent = simulation.dropRate + '/s';
   fitEl.textContent = stats.getFitLabel(board.numRows, simulation.bias);
 }
 
