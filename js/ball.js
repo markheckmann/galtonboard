@@ -5,7 +5,7 @@ let nextId = 0;
 const HIGHLIGHT_COLORS = ['#FFD700', '#FF00FF', '#00FFFF', '#32CD32', '#FF8C00'];
 
 export class Ball {
-  constructor(board) {
+  constructor(board, bias = 0.5) {
     this.id = nextId++;
     this.state = 'falling'; // falling | settled
     this.currentRow = -1; // -1 = above first pin
@@ -13,9 +13,9 @@ export class Ball {
     this.path = [];
     this.board = board;
 
-    // Pre-generate full path
+    // Pre-generate full path (bias = probability of going right)
     for (let i = 0; i < board.numRows; i++) {
-      this.path.push(Math.random() < 0.5 ? 'L' : 'R');
+      this.path.push(Math.random() < bias ? 'R' : 'L');
     }
 
     // Compute final bin index
@@ -69,11 +69,31 @@ export class Ball {
 
     this.progress += dt / hopDuration;
 
-    // Ease-in-out interpolation
+    // Two-phase interpolation with wobble at pin contact
     const t = Math.min(this.progress, 1);
-    const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    let eased;
+    let wobbleX = 0;
 
-    this.visualX = this.sourceX + (this.targetX - this.sourceX) * eased;
+    if (t < 0.5) {
+      // Phase 1: ease-in (fall toward pin)
+      const phase = t / 0.5;
+      eased = phase * phase * 0.5;
+    } else {
+      // Phase 2: ease-out (bounce away from pin)
+      const phase = (t - 0.5) / 0.5;
+      eased = 0.5 + (1 - Math.pow(1 - phase, 2)) * 0.5;
+
+      // Horizontal wobble at pin (skip on final hop into bins)
+      const nextRow = this.currentRow + 1;
+      if (nextRow < this.board.numRows) {
+        const wobbleAmp = this.board.pinSpacingX * 0.06;
+        wobbleX = Math.sin(phase * Math.PI) * (1 - phase) * wobbleAmp;
+        // Wobble opposite to chosen direction (hesitation)
+        if (this.path[nextRow] === 'R') wobbleX = -wobbleX;
+      }
+    }
+
+    this.visualX = this.sourceX + (this.targetX - this.sourceX) * eased + wobbleX;
     this.visualY = this.sourceY + (this.targetY - this.sourceY) * eased;
 
     // Record trail for highlighted balls

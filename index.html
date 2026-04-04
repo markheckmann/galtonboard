@@ -30,6 +30,19 @@
         </div>
       </div>
 
+      <!-- Bias -->
+      <div class="control-group">
+        <label>L/R Bias</label>
+        <div class="control-row">
+          <input type="range" id="bias-slider" min="0" max="100" value="50" step="1">
+          <span class="value-display" id="bias-value">50/50</span>
+        </div>
+        <div class="bias-label-row">
+          <span id="bias-left">L 50%</span>
+          <span id="bias-right">R 50%</span>
+        </div>
+      </div>
+
       <!-- Total Balls -->
       <div class="control-group">
         <label>Total Balls</label>
@@ -61,26 +74,27 @@
           <input type="range" id="rate-slider" min="0" max="100" value="0" step="1">
           <span class="value-display" id="rate-value">1</span>
         </div>
-        <label class="toggle-inline"><input type="checkbox" id="sequential-check"> Sequential (wait 2 pins)</label>
+        <label class="toggle-inline" title="Drop balls one at a time, waiting for each to pass 2 pins before the next one falls."><input type="checkbox" id="sequential-check"> Sequential (wait 2 pins)</label>
       </div>
 
       <hr class="separator">
 
       <!-- Play/Pause/Reset/Drop One -->
       <div class="button-row">
-        <button class="btn-primary" id="play-pause-btn">Play</button>
-        <button class="btn-secondary" id="reset-btn">Reset</button>
-        <button class="btn-accent" id="drop-one-btn">Drop One Ball</button>
+        <button class="btn-primary" id="play-pause-btn" title="Start or pause the simulation (Space)">Play</button>
+        <button class="btn-secondary" id="reset-btn" title="Clear all balls and reset statistics (R)">Reset</button>
+        <button class="btn-accent" id="drop-one-btn" title="Drop a single ball, even while paused">Drop One Ball</button>
       </div>
 
       <hr class="separator">
 
       <!-- Overlay Toggles -->
       <div class="toggle-group">
-        <label><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
-        <label><input type="checkbox" id="curve-check"> Expected Curve</label>
-        <label><input type="checkbox" id="pct-check"> Bin Percentages</label>
-        <label><input type="checkbox" id="stats-check" checked> Show Statistics</label>
+        <label title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+        <label title="Show the theoretical bell curve shape for the total number of balls. This is the distribution the histogram will converge toward."><input type="checkbox" id="bgcurve-check"> Target Bell Curve</label>
+        <label title="Show a dashed line for the expected distribution based on balls settled so far. Compare it with the actual histogram."><input type="checkbox" id="curve-check"> Expected Curve</label>
+        <label title="Show percentages instead of counts above each bin."><input type="checkbox" id="pct-check"> Bin Percentages</label>
+        <label title="Show live statistics: mean, standard deviation, and how well the data fits the expected distribution."><input type="checkbox" id="stats-check" checked> Show Statistics</label>
       </div>
 
       <!-- Stats Panel -->
@@ -151,8 +165,8 @@
 
       <h3>The math</h3>
       <p>With <em>n</em> rows, the probability of landing in bin <em>k</em> is:</p>
-      <p class="formula">P(k) = C(n, k) &middot; 0.5<sup>n</sup></p>
-      <p>where C(n, k) = n! / (k! &middot; (n&minus;k)!) is the binomial coefficient. As <em>n</em> grows, this binomial distribution converges to the normal distribution with mean <em>n/2</em> and standard deviation <em>&radic;n / 2</em>.</p>
+      <p class="formula">P(k) = C(n, k) &middot; p<sup>k</sup> &middot; (1&minus;p)<sup>n&minus;k</sup></p>
+      <p>where C(n, k) = n! / (k! &middot; (n&minus;k)!) is the binomial coefficient and <em>p</em> is the probability of going right (0.5 for a fair board). Use the <strong>bias slider</strong> to explore how changing <em>p</em> skews the distribution. As <em>n</em> grows, the distribution converges to a normal curve with mean <em>n &middot; p</em> and standard deviation <em>&radic;(n &middot; p &middot; (1&minus;p))</em>.</p>
     </div>
   </div>
 

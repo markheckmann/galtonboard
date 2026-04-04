@@ -123,6 +123,15 @@ body {
   opacity: 1;
 }
 
+/* --- Bias labels --- */
+.bias-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text-muted);
+  padding: 0 2px;
+}
+
 /* --- Theme toggle --- */
 .theme-toggle {
   display: flex;

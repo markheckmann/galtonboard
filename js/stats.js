@@ -37,18 +37,18 @@ export class Stats {
     return Math.sqrt(sumSq / this.totalSettled);
   }
 
-  // Binomial PMF: P(k) = C(n,k) * 0.5^n
-  getExpectedDistribution(numRows, totalBalls) {
+  // Binomial PMF: P(k) = C(n,k) * p^k * (1-p)^(n-k)
+  getExpectedDistribution(numRows, totalBalls, p = 0.5) {
     const n = numRows;
     const expected = [];
     for (let k = 0; k <= n; k++) {
-      expected.push(this.binomialPMF(n, k) * totalBalls);
+      expected.push(this.binomialPMF(n, k, p) * totalBalls);
     }
     return expected;
   }
 
-  binomialPMF(n, k) {
-    return this.binomialCoeff(n, k) * Math.pow(0.5, n);
+  binomialPMF(n, k, p = 0.5) {
+    return this.binomialCoeff(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
   }
 
   binomialCoeff(n, k) {
@@ -69,9 +69,9 @@ export class Stats {
     return result;
   }
 
-  getChiSquared(numRows) {
+  getChiSquared(numRows, p = 0.5) {
     if (this.totalSettled < 10) return null;
-    const expected = this.getExpectedDistribution(numRows, this.totalSettled);
+    const expected = this.getExpectedDistribution(numRows, this.totalSettled, p);
     let chi2 = 0;
     for (let i = 0; i < this.binCounts.length; i++) {
       if (expected[i] > 0) {
@@ -81,10 +81,10 @@ export class Stats {
     return chi2;
   }
 
-  getFitLabel(numRows) {
+  getFitLabel(numRows, p = 0.5) {
     if (this.totalSettled < 10) return 'Not enough data';
     if (this.totalSettled < 50) return 'Emerging pattern';
-    const chi2 = this.getChiSquared(numRows);
+    const chi2 = this.getChiSquared(numRows, p);
     if (chi2 === null) return 'Not enough data';
     const df = this.binCounts.length - 1;
     const normalizedChi2 = chi2 / df;

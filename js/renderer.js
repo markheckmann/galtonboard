@@ -17,6 +17,8 @@ const THEMES = {
     pascalFinalText: 'rgba(255, 200, 100, 0.8)',
     highlightInfo: '#ffffff',
     expectedCurve: '#ff4444',
+    bgCurveFill: 'rgba(65, 131, 215, 0.08)',
+    bgCurveStroke: 'rgba(65, 131, 215, 0.2)',
   },
   light: {
     bgGrad1: '#eef2f7',
@@ -34,6 +36,8 @@ const THEMES = {
     pascalFinalText: 'rgba(160, 100, 0, 0.9)',
     highlightInfo: '#1a1a2e',
     expectedCurve: '#cc2222',
+    bgCurveFill: 'rgba(50, 110, 200, 0.07)',
+    bgCurveStroke: 'rgba(50, 110, 200, 0.15)',
   },
 };
 
@@ -45,6 +49,7 @@ export class Renderer {
     this.showExpectedCurve = false;
     this.showStats = true;
     this.showPercentages = false;
+    this.showBackgroundCurve = false;
     this.theme = THEMES.dark;
   }
 
@@ -68,6 +73,9 @@ export class Renderer {
     this.clear();
     this.drawFunnel(board);
     this.drawBinWalls(board);
+    if (this.showBackgroundCurve) {
+      this.drawBackgroundCurve(board, simulation, stats);
+    }
     this.drawPins(board);
 
     if (this.showPascal) {
@@ -139,6 +147,59 @@ export class Renderer {
     ctx.stroke();
   }
 
+  drawBackgroundCurve(board, simulation, stats) {
+    if (simulation.totalBallsToSpawn < 2) return;
+    const ctx = this.ctx;
+    const p = simulation.bias != null ? simulation.bias : 0.5;
+    const expected = stats.getExpectedDistribution(board.numRows, simulation.totalBallsToSpawn, p);
+    const ballDiam = board.ballRadius * 2;
+    const maxExpected = Math.max(...expected);
+    const scale = this._getBinScale(board, simulation, maxExpected);
+
+    // Build curve points
+    const points = [];
+    for (let i = 0; i < expected.length; i++) {
+      const bin = board.binRects[i];
+      const cx = bin.x + bin.width / 2;
+      const barH = expected[i] * ballDiam * scale;
+      points.push({ x: cx, y: board.binFloorY - barH });
+    }
+
+    // Draw filled area with smooth curve
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, board.binFloorY);
+    ctx.lineTo(points[0].x, points[0].y);
+
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      ctx.quadraticCurveTo(prev.x, prev.y, cpx, (prev.y + curr.y) / 2);
+    }
+    // Final segment
+    const last = points[points.length - 1];
+    ctx.lineTo(last.x, last.y);
+    ctx.lineTo(last.x, board.binFloorY);
+    ctx.closePath();
+
+    ctx.fillStyle = this.theme.bgCurveFill;
+    ctx.fill();
+
+    // Stroke the curve top
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      ctx.quadraticCurveTo(prev.x, prev.y, cpx, (prev.y + curr.y) / 2);
+    }
+    ctx.lineTo(last.x, last.y);
+    ctx.strokeStyle = this.theme.bgCurveStroke;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
   drawActiveBalls(board, simulation) {
     const ctx = this.ctx;
 
@@ -167,10 +228,10 @@ export class Renderer {
     }
   }
 
-  // Compute the scale factor so the tallest bin fits within the bin area
-  _getBinScale(board, simulation) {
+  // Compute the scale factor so the tallest bin/curve fits within the bin area
+  _getBinScale(board, simulation, extraMax = 0) {
     const ballDiam = board.ballRadius * 2;
-    const maxCount = Math.max(1, ...simulation.binStacks);
+    const maxCount = Math.max(1, ...simulation.binStacks, extraMax);
     const maxBarHeight = maxCount * ballDiam;
     const availableHeight = board.binFloorY - board.binTopY - 10;
     return maxBarHeight > availableHeight ? availableHeight / maxBarHeight : 1;
@@ -318,7 +379,7 @@ export class Renderer {
     if (stats.totalSettled < 5) return;
 
     const ctx = this.ctx;
-    const expected = stats.getExpectedDistribution(board.numRows, stats.totalSettled);
+    const expected = stats.getExpectedDistribution(board.numRows, stats.totalSettled, simulation.bias != null ? simulation.bias : 0.5);
     const ballDiam = board.ballRadius * 2;
     const scale = this._getBinScale(board, simulation);
 

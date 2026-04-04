@@ -14,6 +14,7 @@ export class Simulation {
     this.running = false;
     this.speedMultiplier = 1;
     this.dropRate = 1; // balls per second
+    this.bias = 0.5; // probability of going right (0.5 = fair)
     this.sequentialMode = false; // wait for previous ball to pass 2 pins before dropping next
     this.totalBallsToSpawn = 500;
     this.totalBallsSpawned = 0;
@@ -114,14 +115,14 @@ export class Simulation {
   }
 
   spawnBall() {
-    const ball = new Ball(this.board);
+    const ball = new Ball(this.board, this.bias);
     this.activeBalls.push(ball);
     this.totalBallsSpawned++;
     return ball;
   }
 
   dropOneBall() {
-    const ball = new Ball(this.board);
+    const ball = new Ball(this.board, this.bias);
     this.dropOneBalls.push(ball);
     return ball;
   }

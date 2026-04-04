@@ -44,6 +44,11 @@ const playPauseBtn = document.getElementById('play-pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 const dropOneBtn = document.getElementById('drop-one-btn');
 const sequentialCheck = document.getElementById('sequential-check');
+const biasSlider = document.getElementById('bias-slider');
+const biasValue = document.getElementById('bias-value');
+const biasLeft = document.getElementById('bias-left');
+const biasRight = document.getElementById('bias-right');
+const bgCurveCheck = document.getElementById('bgcurve-check');
 const themeCheck = document.getElementById('theme-check');
 const pascalCheck = document.getElementById('pascal-check');
 const pctCheck = document.getElementById('pct-check');
@@ -61,6 +66,23 @@ rowsSlider.addEventListener('change', () => {
 });
 rowsSlider.addEventListener('input', () => {
   rowsValue.textContent = rowsSlider.value;
+});
+
+// Bias
+function updateBiasDisplay(pct) {
+  const leftPct = 100 - pct;
+  biasValue.textContent = leftPct === pct ? '50/50' : `${leftPct}/${pct}`;
+  biasLeft.textContent = `L ${leftPct}%`;
+  biasRight.textContent = `R ${pct}%`;
+}
+biasSlider.addEventListener('change', () => {
+  const pct = parseInt(biasSlider.value);
+  simulation.bias = pct / 100;
+  simulation.reset();
+  updateStatsDisplay();
+});
+biasSlider.addEventListener('input', () => {
+  updateBiasDisplay(parseInt(biasSlider.value));
 });
 
 // Total balls
@@ -122,6 +144,9 @@ themeCheck.addEventListener('change', () => {
 // Toggles
 pascalCheck.addEventListener('change', () => {
   renderer.showPascal = pascalCheck.checked;
+});
+bgCurveCheck.addEventListener('change', () => {
+  renderer.showBackgroundCurve = bgCurveCheck.checked;
 });
 pctCheck.addEventListener('change', () => {
   renderer.showPercentages = pctCheck.checked;
@@ -195,7 +220,7 @@ function updateStatsDisplay() {
   stddevEl.textContent = stats.totalSettled > 0 ? stats.getStdDev().toFixed(2) : '—';
   totalEl.textContent = stats.totalSettled;
   spawnedEl.textContent = simulation.totalBallsSpawned;
-  fitEl.textContent = stats.getFitLabel(board.numRows);
+  fitEl.textContent = stats.getFitLabel(board.numRows, simulation.bias);
 }
 
 // --- Animation loop ---
