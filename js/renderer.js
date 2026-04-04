@@ -509,19 +509,33 @@ export class Renderer {
     const bottom = board.binFloorY;
     const labelY = distTop + this.labelFontSize + 2;
 
-    // Mean line
-    ctx.beginPath();
-    ctx.moveTo(meanX, distTop);
-    ctx.lineTo(meanX, bottom);
+    // Mean label with background (drawn first to measure, then line around it)
+    const fontSize = this.labelFontSize;
+    const labelGapTop = labelY - fontSize - 2;
+    const labelGapBottom = labelY + 4;
+
+    // Mean line — two segments with gap for the label
     ctx.strokeStyle = this.theme.meanLine;
     ctx.lineWidth = 2;
     ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(meanX, distTop);
+    if (fontSize > 0) {
+      ctx.lineTo(meanX, labelGapTop);
+      ctx.moveTo(meanX, labelGapBottom);
+    }
+    ctx.lineTo(meanX, bottom);
     ctx.stroke();
 
-    // Mean label
-    if (this.labelFontSize > 0) {
-      ctx.font = `${this.labelFontSize}px sans-serif`;
+    // Mean label with background
+    if (fontSize > 0) {
+      ctx.font = `${fontSize}px sans-serif`;
       ctx.textAlign = 'center';
+      const textW = ctx.measureText('\u03BC').width;
+      // Background
+      ctx.fillStyle = this.theme.bgGrad1;
+      ctx.fillRect(meanX - textW / 2 - 3, labelGapTop, textW + 6, labelGapBottom - labelGapTop);
+      // Text
       ctx.fillStyle = this.theme.meanLine;
       ctx.fillText('\u03BC', meanX, labelY);
     }
