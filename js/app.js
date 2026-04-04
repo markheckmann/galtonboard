@@ -291,6 +291,107 @@ function updateStatsDisplay() {
   fitEl.textContent = stats.getFitLabel(board.numRows, simulation.bias);
 }
 
+// --- Progress bar ---
+const progressFill = document.getElementById('progress-fill');
+function updateProgress() {
+  const pct = simulation.totalBallsToSpawn > 0
+    ? Math.min(100, (simulation.totalBallsSpawned / simulation.totalBallsToSpawn) * 100)
+    : 0;
+  progressFill.style.width = pct + '%';
+}
+
+// --- Shortcut toast (auto-fade after 5 seconds) ---
+const shortcutToast = document.getElementById('shortcut-toast');
+setTimeout(() => shortcutToast.classList.add('hidden'), 5000);
+
+// --- URL state encoding ---
+function getStateFromURL() {
+  const p = new URLSearchParams(window.location.hash.slice(1));
+  return {
+    rows: p.has('rows') ? parseInt(p.get('rows')) : null,
+    balls: p.has('balls') ? parseInt(p.get('balls')) : null,
+    bias: p.has('bias') ? parseInt(p.get('bias')) : null,
+    speed: p.has('speed') ? parseInt(p.get('speed')) : null,
+    rate: p.has('rate') ? parseInt(p.get('rate')) : null,
+    seq: p.has('seq') ? p.get('seq') === '1' : null,
+    physics: p.has('physics') ? p.get('physics') === '1' : null,
+    compact: p.has('compact') ? p.get('compact') === '1' : null,
+    pascal: p.has('pascal') ? p.get('pascal') === '1' : null,
+    abbr: p.has('abbr') ? p.get('abbr') === '1' : null,
+    bgcurve: p.has('bgcurve') ? p.get('bgcurve') === '1' : null,
+    curve: p.has('curve') ? p.get('curve') === '1' : null,
+    pct: p.has('pct') ? p.get('pct') === '1' : null,
+    trail: p.has('trail') ? parseFloat(p.get('trail')) : null,
+    light: p.has('light') ? p.get('light') === '1' : null,
+    labelSize: p.has('ls') ? parseInt(p.get('ls')) : null,
+    pascalSize: p.has('ps') ? parseInt(p.get('ps')) : null,
+  };
+}
+
+function saveStateToURL() {
+  const p = new URLSearchParams();
+  p.set('rows', rowsSlider.value);
+  p.set('balls', ballsInput.value);
+  p.set('bias', biasSlider.value);
+  p.set('speed', speedSlider.value);
+  p.set('rate', rateSlider.value);
+  p.set('seq', sequentialCheck.checked ? '1' : '0');
+  p.set('physics', physicsCheck.checked ? '1' : '0');
+  p.set('compact', compactCheck.checked ? '1' : '0');
+  p.set('pascal', pascalCheck.checked ? '1' : '0');
+  p.set('abbr', pascalAbbrCheck.checked ? '1' : '0');
+  p.set('bgcurve', bgCurveCheck.checked ? '1' : '0');
+  p.set('curve', curveCheck.checked ? '1' : '0');
+  p.set('pct', pctCheck.checked ? '1' : '0');
+  p.set('trail', trailSlider.value);
+  p.set('light', lightMode ? '1' : '0');
+  p.set('ls', labelSizeSlider.value);
+  p.set('ps', pascalSizeSlider.value);
+  history.replaceState(null, '', '#' + p.toString());
+}
+
+function applyURLState() {
+  const s = getStateFromURL();
+  if (s.rows != null) { rowsSlider.value = s.rows; rowsValue.textContent = s.rows; board.setNumRows(s.rows); }
+  if (s.balls != null) { ballsInput.value = s.balls; simulation.totalBallsToSpawn = s.balls; }
+  if (s.bias != null) { biasSlider.value = s.bias; simulation.bias = s.bias / 100; updateBiasDisplay(s.bias); }
+  if (s.speed != null) { speedSlider.value = s.speed; const sp = speedSteps[s.speed]; simulation.speedMultiplier = sp; speedValue.textContent = sp + 'x'; }
+  if (s.rate != null) { rateSlider.value = s.rate; simulation.dropRate = sliderToRate(s.rate); rateValue.textContent = sliderToRate(s.rate); }
+  if (s.seq != null) { sequentialCheck.checked = s.seq; simulation.sequentialMode = s.seq; }
+  if (s.physics != null) { physicsCheck.checked = s.physics; simulation.physicsMode = s.physics; }
+  if (s.compact != null) { compactCheck.checked = s.compact; board.compactMode = s.compact; board.recalculate(board.canvasWidth, board.canvasHeight); }
+  if (s.pascal != null) { pascalCheck.checked = s.pascal; renderer.showPascal = s.pascal; }
+  if (s.abbr != null) { pascalAbbrCheck.checked = s.abbr; renderer.abbreviatePascal = s.abbr; }
+  if (s.bgcurve != null) { bgCurveCheck.checked = s.bgcurve; renderer.showBackgroundCurve = s.bgcurve; }
+  if (s.curve != null) { curveCheck.checked = s.curve; renderer.showExpectedCurve = s.curve; }
+  if (s.pct != null) { pctCheck.checked = s.pct; renderer.showPercentages = s.pct; }
+  if (s.trail != null) { trailSlider.value = s.trail; board.trailDuration = s.trail; trailValue.textContent = s.trail > 0 ? s.trail + 's' : 'off'; }
+  if (s.light != null && s.light) { lightMode = true; document.body.classList.add('light'); renderer.setLightMode(true); themeBtn.classList.add('active'); }
+  if (s.labelSize != null) { labelSizeSlider.value = s.labelSize; renderer.labelFontSize = s.labelSize; labelSizeValue.textContent = s.labelSize; }
+  if (s.pascalSize != null) { pascalSizeSlider.value = s.pascalSize; renderer.pascalFontSize = s.pascalSize; pascalSizeValue.textContent = s.pascalSize; }
+  stats.reset(board.numBins);
+}
+
+// Apply URL state on load (if hash present)
+if (window.location.hash.length > 1) {
+  applyURLState();
+}
+
+// Save state on any control change (debounced)
+let saveTimeout = null;
+function scheduleSaveState() {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(saveStateToURL, 300);
+}
+// Attach to all controls
+[rowsSlider, biasSlider, ballsInput, speedSlider, rateSlider, trailSlider,
+ labelSizeSlider, pascalSizeSlider, sequentialCheck, physicsCheck, compactCheck,
+ pascalCheck, pascalAbbrCheck, bgCurveCheck, curveCheck, pctCheck, statsCheck,
+ themeBtn].forEach(el => el.addEventListener('change', scheduleSaveState));
+[rowsSlider, biasSlider, speedSlider, rateSlider, trailSlider,
+ labelSizeSlider, pascalSizeSlider].forEach(el => el.addEventListener('input', scheduleSaveState));
+themeBtn.addEventListener('click', scheduleSaveState);
+
 // --- Animation loop ---
 let lastTime = 0;
 let statsUpdateTimer = 0;
@@ -302,11 +403,12 @@ function frame(timestamp) {
   simulation.update(dt);
   renderer.draw(board, simulation, stats);
 
-  // Update stats display periodically (not every frame)
+  // Update stats display and progress bar periodically (not every frame)
   statsUpdateTimer += dt;
   if (statsUpdateTimer > 0.2) {
     statsUpdateTimer = 0;
     updateStatsDisplay();
+    updateProgress();
   }
 
   requestAnimationFrame(frame);
