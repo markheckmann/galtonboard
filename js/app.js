@@ -124,8 +124,19 @@ speedSlider.addEventListener('input', () => {
 
 // Drop rate (exponential: slider 0–100 maps to 1–10000)
 function sliderToRate(val) {
-  return Math.round(Math.pow(10, val / 100 * 4)); // 10^0=1 to 10^4=10000
+  if (val === 0) return 0;
+  if (val === 1) return 0.25;
+  if (val === 2) return 0.5;
+  return Math.round(Math.pow(10, (val - 2) / 98 * 4)); // 1 to 10000
 }
+document.getElementById('rate-minus').addEventListener('click', () => {
+  rateSlider.value = Math.max(0, parseInt(rateSlider.value) - 1);
+  rateSlider.dispatchEvent(new Event('input'));
+});
+document.getElementById('rate-plus').addEventListener('click', () => {
+  rateSlider.value = Math.min(100, parseInt(rateSlider.value) + 1);
+  rateSlider.dispatchEvent(new Event('input'));
+});
 rateSlider.addEventListener('input', () => {
   const rate = sliderToRate(parseInt(rateSlider.value));
   simulation.dropRate = rate;

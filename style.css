@@ -273,6 +273,22 @@ button {
   accent-color: var(--accent);
 }
 
+/* Step buttons (+/-) */
+.step-btn {
+  padding: 0 6px;
+  font-size: 14px;
+  background: var(--bg-btn-secondary);
+  color: var(--text-muted);
+  border-radius: 3px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.step-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-btn-secondary-hover);
+}
+
 /* Speed presets */
 .speed-presets {
   display: flex;

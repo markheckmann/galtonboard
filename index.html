@@ -69,7 +69,9 @@
       <div class="control-group" title="How many balls are released per second. Scales exponentially — fine control at low rates, rapid increase at the high end.">
         <label>Drop Rate (balls/sec)</label>
         <div class="control-row">
+          <button class="step-btn" id="rate-minus" title="Decrease drop rate">−</button>
           <input type="range" id="rate-slider" min="0" max="100" value="0" step="1">
+          <button class="step-btn" id="rate-plus" title="Increase drop rate">+</button>
           <span class="value-display" id="rate-value">1</span>
         </div>
         <label class="toggle-inline" title="Drop balls one at a time, waiting for each to pass 2 pins before the next one falls."><input type="checkbox" id="sequential-check"> Sequential (wait 2 pins)</label>
@@ -125,18 +127,18 @@
       <div class="control-group" title="Font size for the count or percentage labels above each bin. Set to 0 to hide.">
         <label>Label Size</label>
         <div class="control-row">
-          <input type="range" id="label-size-slider" min="0" max="24" value="10" step="1">
-          <span class="value-display" id="label-size-value">10</span>
+          <input type="range" id="label-size-slider" min="0" max="24" value="14" step="1">
+          <span class="value-display" id="label-size-value">14</span>
         </div>
       </div>
       <div class="control-group" title="Font size for Pascal's Triangle numbers on the pins. Set to 0 to hide.">
+        <label class="toggle-inline" title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+        <label class="toggle-inline" title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
         <label>Pascal Label Size</label>
         <div class="control-row">
           <input type="range" id="pascal-size-slider" min="0" max="20" value="9" step="1">
           <span class="value-display" id="pascal-size-value">9</span>
         </div>
-        <label class="toggle-inline" title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
-        <label class="toggle-inline" title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
       </div>
 
       <!-- Stats Panel -->

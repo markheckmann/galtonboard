@@ -57,7 +57,7 @@ export class Renderer {
     this.showPercentages = false;
     this.showBackgroundCurve = false;
     this.abbreviatePascal = false;
-    this.labelFontSize = 10;
+    this.labelFontSize = 14;
     this.pascalFontSize = 9;
     this.showDistLines = false;
     this.trailWidth = 1;
@@ -131,16 +131,6 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
 
-    // Remaining ball count above funnel
-    if (remaining > 0) {
-      ctx.font = '14px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillStyle = this.theme.binCountText;
-      ctx.globalAlpha = 0.7;
-      ctx.fillText(remaining.toLocaleString(), cx, fy - 28);
-      ctx.globalAlpha = 1;
-    }
-
     ctx.beginPath();
     ctx.moveTo(cx - 30, fy - 20);
     ctx.lineTo(cx - 5, fy + 5);
@@ -153,6 +143,30 @@ export class Renderer {
     // Funnel fill
     ctx.fillStyle = this.theme.funnelFill;
     ctx.fill();
+
+    // Remaining ball count above funnel (drawn on top with background pill)
+    if (remaining > 0) {
+      const text = remaining.toLocaleString();
+      ctx.font = 'bold 13px sans-serif';
+      ctx.textAlign = 'center';
+      const textW = ctx.measureText(text).width;
+      const pillX = cx - textW / 2 - 6;
+      const pillY = fy - 48;
+      const pillW = textW + 12;
+      const pillH = 18;
+
+      // Background pill
+      ctx.fillStyle = this.theme.bgGrad1;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath();
+      ctx.roundRect(pillX, pillY, pillW, pillH, 4);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Text
+      ctx.fillStyle = this.theme.binCountText;
+      ctx.fillText(text, cx, pillY + 13);
+    }
   }
 
   drawPins(board, simulation) {
