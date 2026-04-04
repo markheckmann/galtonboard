@@ -133,14 +133,26 @@ function sliderToRate(val) {
   const raw = 12 * Math.pow(10000 / 12, (val - 18) / 82);
   return Math.round(raw);
 }
-document.getElementById('rate-minus').addEventListener('click', () => {
-  rateSlider.value = Math.max(0, parseInt(rateSlider.value) - 1);
-  rateSlider.dispatchEvent(new Event('input'));
+// Generic +/- step buttons for all sliders
+document.querySelectorAll('.step-minus').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const slider = document.getElementById(btn.dataset.slider);
+    const step = parseFloat(slider.step) || 1;
+    slider.value = Math.max(parseFloat(slider.min), parseFloat(slider.value) - step);
+    slider.dispatchEvent(new Event('input'));
+    slider.dispatchEvent(new Event('change'));
+  });
 });
-document.getElementById('rate-plus').addEventListener('click', () => {
-  rateSlider.value = Math.min(100, parseInt(rateSlider.value) + 1);
-  rateSlider.dispatchEvent(new Event('input'));
+document.querySelectorAll('.step-plus').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const slider = document.getElementById(btn.dataset.slider);
+    const step = parseFloat(slider.step) || 1;
+    slider.value = Math.min(parseFloat(slider.max), parseFloat(slider.value) + step);
+    slider.dispatchEvent(new Event('input'));
+    slider.dispatchEvent(new Event('change'));
+  });
 });
+
 rateSlider.addEventListener('input', () => {
   const rate = sliderToRate(parseInt(rateSlider.value));
   simulation.dropRate = rate;
