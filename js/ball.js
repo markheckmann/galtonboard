@@ -112,6 +112,7 @@ export class Ball {
   setHighlighted(highlighted, colorIndex) {
     this.highlighted = highlighted;
     this.highlightColorIndex = colorIndex;
+    this.highlightTimer = highlighted ? 5 : 0; // seconds after settling until auto-remove
     if (highlighted) {
       this.trailPoints = [{ x: this.visualX, y: this.visualY }];
     } else {

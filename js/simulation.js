@@ -56,6 +56,17 @@ export class Simulation {
   update(dt) {
     const hopDuration = this.baseHopDuration / this.speedMultiplier;
 
+    // Expire highlighted balls 5 seconds after they settle
+    for (const ball of this.highlightedBalls) {
+      if (ball.state === 'settled') {
+        ball.highlightTimer -= dt;
+        if (ball.highlightTimer <= 0) {
+          ball.setHighlighted(false, -1);
+          this.highlightedBalls.delete(ball);
+        }
+      }
+    }
+
     // Always animate drop-one balls, even when paused
     for (let i = this.dropOneBalls.length - 1; i >= 0; i--) {
       const ball = this.dropOneBalls[i];

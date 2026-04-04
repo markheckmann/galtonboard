@@ -44,6 +44,7 @@ const playPauseBtn = document.getElementById('play-pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 const dropOneBtn = document.getElementById('drop-one-btn');
 const sequentialCheck = document.getElementById('sequential-check');
+const themeCheck = document.getElementById('theme-check');
 const pascalCheck = document.getElementById('pascal-check');
 const pctCheck = document.getElementById('pct-check');
 const curveCheck = document.getElementById('curve-check');
@@ -110,6 +111,12 @@ dropOneBtn.addEventListener('click', () => {
 // Sequential mode
 sequentialCheck.addEventListener('change', () => {
   simulation.sequentialMode = sequentialCheck.checked;
+});
+
+// Theme
+themeCheck.addEventListener('change', () => {
+  document.body.classList.toggle('light', themeCheck.checked);
+  renderer.setLightMode(themeCheck.checked);
 });
 
 // Toggles

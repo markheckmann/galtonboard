@@ -1,5 +1,42 @@
 // All Canvas drawing: pins, balls, bins, overlays, highlights
 
+const THEMES = {
+  dark: {
+    bgGrad1: '#1a1a2e',
+    bgGrad2: '#16213e',
+    pin: '#c0c0c0',
+    funnel: '#8899aa',
+    funnelFill: 'rgba(136, 153, 170, 0.15)',
+    binWall: 'rgba(100, 140, 180, 0.4)',
+    binFloor: 'rgba(100, 140, 180, 0.6)',
+    ballFill: 'rgba(65, 131, 215, 0.85)',
+    barGrad1: 'rgba(65, 131, 215, 0.9)',
+    barGrad2: 'rgba(45, 91, 175, 0.9)',
+    binCountText: 'rgba(200, 220, 240, 0.8)',
+    pascalText: 'rgba(255, 255, 150, 0.6)',
+    pascalFinalText: 'rgba(255, 200, 100, 0.8)',
+    highlightInfo: '#ffffff',
+    expectedCurve: '#ff4444',
+  },
+  light: {
+    bgGrad1: '#eef2f7',
+    bgGrad2: '#e0e8f0',
+    pin: '#555555',
+    funnel: '#556677',
+    funnelFill: 'rgba(80, 100, 120, 0.12)',
+    binWall: 'rgba(60, 90, 130, 0.3)',
+    binFloor: 'rgba(60, 90, 130, 0.5)',
+    ballFill: 'rgba(50, 110, 200, 0.85)',
+    barGrad1: 'rgba(50, 110, 200, 0.85)',
+    barGrad2: 'rgba(35, 80, 160, 0.85)',
+    binCountText: 'rgba(30, 50, 80, 0.8)',
+    pascalText: 'rgba(120, 90, 0, 0.7)',
+    pascalFinalText: 'rgba(160, 100, 0, 0.9)',
+    highlightInfo: '#1a1a2e',
+    expectedCurve: '#cc2222',
+  },
+};
+
 export class Renderer {
   constructor(canvas) {
     this.canvas = canvas;
@@ -8,6 +45,11 @@ export class Renderer {
     this.showExpectedCurve = false;
     this.showStats = true;
     this.showPercentages = false;
+    this.theme = THEMES.dark;
+  }
+
+  setLightMode(light) {
+    this.theme = light ? THEMES.light : THEMES.dark;
   }
 
   clear() {
@@ -16,8 +58,8 @@ export class Renderer {
 
     // Background gradient
     const grad = ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-    grad.addColorStop(0, '#1a1a2e');
-    grad.addColorStop(1, '#16213e');
+    grad.addColorStop(0, this.theme.bgGrad1);
+    grad.addColorStop(1, this.theme.bgGrad2);
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
@@ -53,18 +95,18 @@ export class Renderer {
     ctx.lineTo(cx - 5, fy + 5);
     ctx.lineTo(cx + 5, fy + 5);
     ctx.lineTo(cx + 30, fy - 20);
-    ctx.strokeStyle = '#8899aa';
+    ctx.strokeStyle = this.theme.funnel;
     ctx.lineWidth = 2;
     ctx.stroke();
 
     // Funnel fill
-    ctx.fillStyle = 'rgba(136, 153, 170, 0.15)';
+    ctx.fillStyle = this.theme.funnelFill;
     ctx.fill();
   }
 
   drawPins(board) {
     const ctx = this.ctx;
-    ctx.fillStyle = '#c0c0c0';
+    ctx.fillStyle = this.theme.pin;
 
     for (const row of board.pins) {
       for (const pin of row) {
@@ -77,7 +119,7 @@ export class Renderer {
 
   drawBinWalls(board) {
     const ctx = this.ctx;
-    ctx.strokeStyle = 'rgba(100, 140, 180, 0.4)';
+    ctx.strokeStyle = this.theme.binWall;
     ctx.lineWidth = 1;
 
     for (let i = 0; i <= board.numBins; i++) {
@@ -92,7 +134,7 @@ export class Renderer {
     ctx.beginPath();
     ctx.moveTo(board.binRects[0].x, board.binFloorY);
     ctx.lineTo(board.binRects[board.numBins - 1].x + board.pinSpacingX, board.binFloorY);
-    ctx.strokeStyle = 'rgba(100, 140, 180, 0.6)';
+    ctx.strokeStyle = this.theme.binFloor;
     ctx.lineWidth = 2;
     ctx.stroke();
   }
@@ -152,8 +194,8 @@ export class Renderer {
         const barY = board.binFloorY - height;
 
         const grad = ctx.createLinearGradient(0, barY, 0, board.binFloorY);
-        grad.addColorStop(0, 'rgba(65, 131, 215, 0.9)');
-        grad.addColorStop(1, 'rgba(45, 91, 175, 0.9)');
+        grad.addColorStop(0, this.theme.barGrad1);
+        grad.addColorStop(1, this.theme.barGrad2);
         ctx.fillStyle = grad;
         ctx.fillRect(bin.x + 2, barY, bin.width - 4, height);
       } else {
@@ -162,7 +204,7 @@ export class Renderer {
           const y = board.binFloorY - (s + 0.5) * ballDiam;
           ctx.beginPath();
           ctx.arc(cx, y, board.ballRadius - 0.5, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(65, 131, 215, 0.85)';
+          ctx.fillStyle = this.theme.ballFill;
           ctx.fill();
         }
       }
@@ -254,7 +296,7 @@ export class Renderer {
     const scale = this._getBinScale(board, simulation);
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(200, 220, 240, 0.8)';
+    ctx.fillStyle = this.theme.binCountText;
 
     for (let i = 0; i < board.numBins; i++) {
       const count = simulation.binStacks[i];
@@ -282,7 +324,7 @@ export class Renderer {
 
     ctx.beginPath();
     ctx.setLineDash([5, 5]);
-    ctx.strokeStyle = '#ff4444';
+    ctx.strokeStyle = this.theme.expectedCurve;
     ctx.lineWidth = 2;
 
     for (let i = 0; i < expected.length; i++) {
@@ -305,7 +347,7 @@ export class Renderer {
   drawPascalOverlay(board, stats) {
     const ctx = this.ctx;
     ctx.font = '9px monospace';
-    ctx.fillStyle = 'rgba(255, 255, 150, 0.6)';
+    ctx.fillStyle = this.theme.pascalText;
 
     for (let r = 0; r < board.numRows; r++) {
       const row = stats.getPascalRow(r);
@@ -336,7 +378,7 @@ export class Renderer {
     const finalTextWidth = ctx.measureText(maxFinalText).width;
     const finalNeedsRotation = finalTextWidth > board.pinSpacingX * 0.85;
 
-    ctx.fillStyle = 'rgba(255, 200, 100, 0.8)';
+    ctx.fillStyle = this.theme.pascalFinalText;
     for (let c = 0; c < finalRow.length; c++) {
       const bin = board.binRects[c];
       const cx = bin.x + bin.width / 2;
