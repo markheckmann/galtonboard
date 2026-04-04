@@ -305,24 +305,52 @@ export class Renderer {
   drawPascalOverlay(board, stats) {
     const ctx = this.ctx;
     ctx.font = '9px monospace';
-    ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(255, 255, 150, 0.6)';
 
     for (let r = 0; r < board.numRows; r++) {
       const row = stats.getPascalRow(r);
+      // Check if the widest number in this row would overlap
+      const maxText = String(Math.max(...row));
+      const textWidth = ctx.measureText(maxText).width;
+      const needsRotation = textWidth > board.pinSpacingX * 0.85;
+
       for (let c = 0; c <= r; c++) {
         const pin = board.pins[r][c];
-        ctx.fillText(row[c], pin.x, pin.y - board.pinRadius - 4);
+        if (needsRotation) {
+          ctx.save();
+          ctx.translate(pin.x, pin.y - board.pinRadius - 4);
+          ctx.rotate(-Math.PI / 6); // -30 degrees
+          ctx.textAlign = 'right';
+          ctx.fillText(row[c], 0, 0);
+          ctx.restore();
+        } else {
+          ctx.textAlign = 'center';
+          ctx.fillText(row[c], pin.x, pin.y - board.pinRadius - 4);
+        }
       }
     }
 
     // Final row: distribution numbers centered above each bin
     const finalRow = stats.getPascalRow(board.numRows);
+    const maxFinalText = String(Math.max(...finalRow));
+    const finalTextWidth = ctx.measureText(maxFinalText).width;
+    const finalNeedsRotation = finalTextWidth > board.pinSpacingX * 0.85;
+
     ctx.fillStyle = 'rgba(255, 200, 100, 0.8)';
     for (let c = 0; c < finalRow.length; c++) {
       const bin = board.binRects[c];
       const cx = bin.x + bin.width / 2;
-      ctx.fillText(finalRow[c], cx, board.binTopY - 6);
+      if (finalNeedsRotation) {
+        ctx.save();
+        ctx.translate(cx, board.binTopY - 6);
+        ctx.rotate(-Math.PI / 6);
+        ctx.textAlign = 'right';
+        ctx.fillText(finalRow[c], 0, 0);
+        ctx.restore();
+      } else {
+        ctx.textAlign = 'center';
+        ctx.fillText(finalRow[c], cx, board.binTopY - 6);
+      }
     }
   }
 
