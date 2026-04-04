@@ -66,28 +66,30 @@ export class PhysicsBall {
   step(dt, hopDuration) {
     if (this.state === 'settled') return;
 
-    this.progress += dt / hopDuration;
+    // Slightly extend duration for long hops to tame end acceleration
+    const hopDy = this.targetY - this.sourceY;
+    const normalDy = this.board.pinSpacingY;
+    const ratio = Math.max(1, hopDy / normalDy);
+    // Gentle scaling: cube root so a 4x drop only takes ~1.6x as long
+    const durationScale = Math.pow(ratio, 1/3);
+    this.progress += dt / (hopDuration * durationScale);
     const t = Math.min(this.progress, 1);
 
-    // Ballistic arc: ball launches from pin at an angle, arcs upward,
-    // then curves down under gravity to the next pin — like a projectile.
+    // Ballistic arc with fixed upward bounce.
+    // Every hop starts with the same upward launch velocity (vy0),
+    // then gravity (g) is solved to land exactly at the target at t=1:
+    //   y(1) = vy0 + 0.5*g = dy  →  g = 2*(dy - vy0)
     //
-    // We solve for launch velocity that lands exactly at the target:
-    //   x(t) = sourceX + vx * t        (constant horizontal speed)
-    //   y(t) = sourceY + vy * t + 0.5 * g * t^2   (gravity pulls down)
-    //
-    // At t=1: x=targetX, y=targetY → vx = dx, vy = dy - 0.5*g
-    // g controls the arc height: larger g = taller arc
+    // vy0 is negative (upward), based on normal pin spacing.
 
     const dx = this.targetX - this.sourceX;
     const dy = this.targetY - this.sourceY;
-    const g = this.board.pinSpacingY * 2.5; // gravity strength — controls arc height
+    const vy0 = -this.board.pinSpacingY * 0.8; // fixed upward bounce
+    // Solve g to land at target, accounting for scaled duration (t goes 0→1)
+    const g = 2 * (dy - vy0);
 
-    const vx = dx;           // horizontal launch velocity
-    const vy = dy - 0.5 * g; // vertical launch velocity (upward component)
-
-    this.visualX = this.sourceX + vx * t;
-    this.visualY = this.sourceY + vy * t + 0.5 * g * t * t;
+    this.visualX = this.sourceX + dx * t;
+    this.visualY = this.sourceY + vy0 * t + 0.5 * g * t * t;
 
     if (this.progress >= 1) {
       // Arrived at next pin — advance

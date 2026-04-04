@@ -83,9 +83,9 @@ export class Ball {
       const phase = (t - 0.5) / 0.5;
       eased = 0.5 + (1 - Math.pow(1 - phase, 2)) * 0.5;
 
-      // Horizontal wobble at pin (skip on final hop into bins)
+      // Horizontal wobble at pin (including last pin before bins)
       const nextRow = this.currentRow + 1;
-      if (nextRow < this.board.numRows) {
+      if (nextRow < this.path.length) {
         const wobbleAmp = this.board.pinSpacingX * 0.06;
         wobbleX = Math.sin(phase * Math.PI) * (1 - phase) * wobbleAmp;
         // Wobble opposite to chosen direction (hesitation)
