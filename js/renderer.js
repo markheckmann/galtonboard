@@ -20,6 +20,8 @@ const THEMES = {
     bgCurveFill: 'rgba(65, 131, 215, 0.08)',
     bgCurveStroke: 'rgba(65, 131, 215, 0.2)',
     pinFlash: '#ffffff',
+    meanLine: 'rgba(255, 220, 50, 0.8)',
+    stddevLine: 'rgba(255, 220, 50, 0.4)',
   },
   light: {
     bgGrad1: '#eef2f7',
@@ -40,6 +42,8 @@ const THEMES = {
     bgCurveFill: 'rgba(50, 110, 200, 0.07)',
     bgCurveStroke: 'rgba(50, 110, 200, 0.15)',
     pinFlash: '#ff9933',
+    meanLine: 'rgba(200, 120, 0, 0.8)',
+    stddevLine: 'rgba(200, 120, 0, 0.4)',
   },
 };
 
@@ -55,6 +59,7 @@ export class Renderer {
     this.abbreviatePascal = false;
     this.labelFontSize = 10;
     this.pascalFontSize = 9;
+    this.showDistLines = false;
     this.theme = THEMES.dark;
   }
 
@@ -96,6 +101,9 @@ export class Renderer {
     }
 
     this.drawBinCounts(board, simulation, stats);
+    if (this.showDistLines) {
+      this.drawDistributionLines(board, stats);
+    }
     this.drawSplashes(board, simulation);
   }
 
@@ -430,6 +438,73 @@ export class Renderer {
       } else {
         ctx.fillText(count, cx, topY - 5);
       }
+    }
+  }
+
+  drawDistributionLines(board, stats) {
+    if (stats.totalSettled < 5) return;
+    const ctx = this.ctx;
+    const mean = stats.getMean();
+    const stddev = stats.getStdDev();
+    const firstBinX = board.binRects[0].x;
+    const binW = board.pinSpacingX;
+
+    // Convert bin index (fractional) to canvas X
+    const binToX = (bin) => firstBinX + (bin + 0.5) * binW;
+
+    const meanX = binToX(mean);
+    const stdLeftX = binToX(mean - stddev);
+    const stdRightX = binToX(mean + stddev);
+    const top = board.binTopY - 15;
+    const bottom = board.binFloorY;
+
+    // Mean line
+    ctx.beginPath();
+    ctx.moveTo(meanX, top);
+    ctx.lineTo(meanX, bottom);
+    ctx.strokeStyle = this.theme.meanLine;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+    ctx.stroke();
+
+    // Mean label
+    if (this.labelFontSize > 0) {
+      ctx.font = `${this.labelFontSize}px sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = this.theme.meanLine;
+      ctx.fillText('\u03BC', meanX, top - 4);
+    }
+
+    // +/- 1 stddev lines
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = this.theme.stddevLine;
+    ctx.lineWidth = 1.5;
+
+    ctx.beginPath();
+    ctx.moveTo(stdLeftX, top);
+    ctx.lineTo(stdLeftX, bottom);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(stdRightX, top);
+    ctx.lineTo(stdRightX, bottom);
+    ctx.stroke();
+
+    // Stddev bracket line across the top
+    ctx.beginPath();
+    ctx.moveTo(stdLeftX, top + 8);
+    ctx.lineTo(stdRightX, top + 8);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Labels
+    if (this.labelFontSize > 0) {
+      ctx.font = `${Math.max(this.labelFontSize - 1, 6)}px sans-serif`;
+      ctx.fillStyle = this.theme.stddevLine;
+      ctx.textAlign = 'right';
+      ctx.fillText('-1\u03C3', stdLeftX - 3, top + 12);
+      ctx.textAlign = 'left';
+      ctx.fillText('+1\u03C3', stdRightX + 3, top + 12);
     }
   }
 

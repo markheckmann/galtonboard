@@ -55,6 +55,7 @@ const pascalSizeSlider = document.getElementById('pascal-size-slider');
 const pascalSizeValue = document.getElementById('pascal-size-value');
 const trailSlider = document.getElementById('trail-slider');
 const trailValue = document.getElementById('trail-value');
+const distlinesCheck = document.getElementById('distlines-check');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
 const physicsCheck = document.getElementById('physics-check');
@@ -203,6 +204,9 @@ pascalCheck.addEventListener('change', () => {
 pascalAbbrCheck.addEventListener('change', () => {
   renderer.abbreviatePascal = pascalAbbrCheck.checked;
 });
+distlinesCheck.addEventListener('change', () => {
+  renderer.showDistLines = distlinesCheck.checked;
+});
 bgCurveCheck.addEventListener('change', () => {
   renderer.showBackgroundCurve = bgCurveCheck.checked;
 });
@@ -319,6 +323,7 @@ function getStateFromURL() {
     pascal: p.has('pascal') ? p.get('pascal') === '1' : null,
     abbr: p.has('abbr') ? p.get('abbr') === '1' : null,
     bgcurve: p.has('bgcurve') ? p.get('bgcurve') === '1' : null,
+    distlines: p.has('distlines') ? p.get('distlines') === '1' : null,
     curve: p.has('curve') ? p.get('curve') === '1' : null,
     pct: p.has('pct') ? p.get('pct') === '1' : null,
     trail: p.has('trail') ? parseFloat(p.get('trail')) : null,
@@ -341,6 +346,7 @@ function saveStateToURL() {
   p.set('pascal', pascalCheck.checked ? '1' : '0');
   p.set('abbr', pascalAbbrCheck.checked ? '1' : '0');
   p.set('bgcurve', bgCurveCheck.checked ? '1' : '0');
+  p.set('distlines', distlinesCheck.checked ? '1' : '0');
   p.set('curve', curveCheck.checked ? '1' : '0');
   p.set('pct', pctCheck.checked ? '1' : '0');
   p.set('trail', trailSlider.value);
@@ -363,6 +369,7 @@ function applyURLState() {
   if (s.pascal != null) { pascalCheck.checked = s.pascal; renderer.showPascal = s.pascal; }
   if (s.abbr != null) { pascalAbbrCheck.checked = s.abbr; renderer.abbreviatePascal = s.abbr; }
   if (s.bgcurve != null) { bgCurveCheck.checked = s.bgcurve; renderer.showBackgroundCurve = s.bgcurve; }
+  if (s.distlines != null) { distlinesCheck.checked = s.distlines; renderer.showDistLines = s.distlines; }
   if (s.curve != null) { curveCheck.checked = s.curve; renderer.showExpectedCurve = s.curve; }
   if (s.pct != null) { pctCheck.checked = s.pct; renderer.showPercentages = s.pct; }
   if (s.trail != null) { trailSlider.value = s.trail; board.trailDuration = s.trail; trailValue.textContent = s.trail > 0 ? s.trail + 's' : 'off'; }
@@ -386,7 +393,7 @@ function scheduleSaveState() {
 // Attach to all controls
 [rowsSlider, biasSlider, ballsInput, speedSlider, rateSlider, trailSlider,
  labelSizeSlider, pascalSizeSlider, sequentialCheck, physicsCheck, compactCheck,
- pascalCheck, pascalAbbrCheck, bgCurveCheck, curveCheck, pctCheck, statsCheck,
+ pascalCheck, pascalAbbrCheck, bgCurveCheck, distlinesCheck, curveCheck, pctCheck, statsCheck,
  themeBtn].forEach(el => el.addEventListener('change', scheduleSaveState));
 [rowsSlider, biasSlider, speedSlider, rateSlider, trailSlider,
  labelSizeSlider, pascalSizeSlider].forEach(el => el.addEventListener('input', scheduleSaveState));
