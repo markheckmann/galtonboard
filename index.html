@@ -10,9 +10,12 @@
   <div class="app">
     <!-- Sidebar Controls -->
     <aside class="sidebar">
-      <h1>Galton Board
-        <small>Interactive Bean Machine</small>
-      </h1>
+      <div class="header-row">
+        <h1>Galton Board
+          <small>Interactive Bean Machine</small>
+        </h1>
+        <button class="btn-info" id="info-btn" title="What is a Galton Board?">&#9432;</button>
+      </div>
 
       <label class="theme-toggle">
         <input type="checkbox" id="theme-check"> Light mode
@@ -110,11 +113,46 @@
         Click a ball to track it. Up to 5 balls can be highlighted at once.
         <br>Keyboard: <b>Space</b> = Play/Pause, <b>R</b> = Reset
       </div>
+
     </aside>
 
     <!-- Canvas -->
     <div class="canvas-container">
       <canvas id="galton-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Info overlay -->
+  <div class="overlay" id="info-overlay">
+    <div class="overlay-content">
+      <button class="overlay-close" id="info-close">&times;</button>
+      <h2>The Galton Board</h2>
+      <p>The <strong>Galton Board</strong> (also called a <em>bean machine</em> or <em>quincunx</em>) was invented by Sir Francis Galton in 1876 to demonstrate how a normal distribution arises from many small, independent random events.</p>
+
+      <h3>How it works</h3>
+      <p>Balls are dropped from the top and hit a triangular grid of pins. At each pin, a ball bounces either left or right with equal probability &mdash; like flipping a coin. After passing through all rows, each ball lands in one of the collection bins at the bottom.</p>
+
+      <h3>Why a bell curve forms</h3>
+      <p>Each ball's final position is the result of many independent left/right decisions. A ball that goes right <em>k</em> times out of <em>n</em> rows lands in bin <em>k</em>. The number of paths leading to each bin follows the <strong>binomial coefficients</strong> (Pascal's triangle): there are many more paths to the center bins than to the edges.</p>
+      <p>For example, with 10 rows there is only <strong>1 path</strong> to the far-left bin (all lefts), but <strong>252 paths</strong> to the center bin &mdash; making it about 252 times more likely.</p>
+
+      <h3>The Central Limit Theorem</h3>
+      <p>The <strong>Central Limit Theorem (CLT)</strong> is one of the most important results in statistics. It states that the sum (or average) of many independent random variables will approximate a <strong>normal (Gaussian) distribution</strong>, regardless of the shape of the original distribution.</p>
+      <p>The Galton Board is a physical demonstration: each ball's final position is the <em>sum</em> of <em>n</em> independent coin flips (+1 for right, 0 for left). As you increase the number of rows and balls, the histogram in the bins converges to a smooth bell curve &mdash; the normal distribution.</p>
+
+      <h3>Key insights to explore</h3>
+      <ul>
+        <li><strong>Individual randomness, collective order:</strong> Each ball takes an unpredictable path, yet the overall distribution is highly predictable.</li>
+        <li><strong>More rows = smoother curve:</strong> Increase the pin rows to see the distribution become more bell-shaped.</li>
+        <li><strong>Pascal's triangle:</strong> Enable the overlay to see how path counts at each pin map directly to the binomial coefficients.</li>
+        <li><strong>Expected vs. observed:</strong> Enable the expected curve to compare the theoretical distribution with the actual results.</li>
+        <li><strong>Track a ball:</strong> Click on individual balls to follow their random journey and see that each path is unique.</li>
+      </ul>
+
+      <h3>The math</h3>
+      <p>With <em>n</em> rows, the probability of landing in bin <em>k</em> is:</p>
+      <p class="formula">P(k) = C(n, k) &middot; 0.5<sup>n</sup></p>
+      <p>where C(n, k) = n! / (k! &middot; (n&minus;k)!) is the binomial coefficient. As <em>n</em> grows, this binomial distribution converges to the normal distribution with mean <em>n/2</em> and standard deviation <em>&radic;n / 2</em>.</p>
     </div>
   </div>
 

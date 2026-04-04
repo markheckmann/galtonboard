@@ -157,11 +157,25 @@ canvas.addEventListener('click', (e) => {
   }
 });
 
+// --- Info overlay ---
+const infoOverlay = document.getElementById('info-overlay');
+document.getElementById('info-btn').addEventListener('click', () => {
+  infoOverlay.classList.add('visible');
+});
+document.getElementById('info-close').addEventListener('click', () => {
+  infoOverlay.classList.remove('visible');
+});
+infoOverlay.addEventListener('click', (e) => {
+  if (e.target === infoOverlay) infoOverlay.classList.remove('visible');
+});
+
 // --- Keyboard shortcuts ---
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT') return; // Don't capture when typing in inputs
 
-  if (e.code === 'Space') {
+  if (e.code === 'Escape') {
+    infoOverlay.classList.remove('visible');
+  } else if (e.code === 'Space') {
     e.preventDefault();
     playPauseBtn.click();
   } else if (e.code === 'KeyR') {
