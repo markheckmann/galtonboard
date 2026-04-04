@@ -28,6 +28,10 @@ export class Simulation {
     // Splash effects when balls land
     this.splashes = [];
 
+    // Pin flash timers [row][col] — set when a ball hits a pin
+    this.pinFlashes = [];
+    this._initPinFlashes();
+
     // Base duration for one hop between pins (seconds)
     this.baseHopDuration = 0.6;
 
@@ -35,11 +39,32 @@ export class Simulation {
     this.dropOneBalls = [];
   }
 
+  _initPinFlashes() {
+    this.pinFlashes = [];
+    for (let r = 0; r < this.board.numRows; r++) {
+      this.pinFlashes.push(new Float32Array(r + 1)); // initialized to 0
+    }
+  }
+
+  _consumeHitPin(ball) {
+    if (ball.hitPin) {
+      this.flashPin(ball.hitPin.row, ball.hitPin.col);
+      ball.hitPin = null;
+    }
+  }
+
+  flashPin(row, col) {
+    if (row >= 0 && row < this.pinFlashes.length && col >= 0 && col < this.pinFlashes[row].length) {
+      this.pinFlashes[row][col] = 0.3; // flash duration in seconds
+    }
+  }
+
   reset() {
     this.activeBalls = [];
     this.settledBalls = [];
     this.dropOneBalls = [];
     this.splashes = [];
+    this._initPinFlashes();
     this.highlightedBalls.clear();
     this.totalBallsSpawned = 0;
     this.dropAccumulator = 0;
@@ -62,6 +87,14 @@ export class Simulation {
 
   update(dt) {
     const hopDuration = this.baseHopDuration / this.speedMultiplier;
+
+    // Decay pin flashes
+    for (let r = 0; r < this.pinFlashes.length; r++) {
+      const row = this.pinFlashes[r];
+      for (let c = 0; c < row.length; c++) {
+        if (row[c] > 0) row[c] = Math.max(0, row[c] - dt);
+      }
+    }
 
     // Decay splash effects
     for (let i = this.splashes.length - 1; i >= 0; i--) {
@@ -86,6 +119,7 @@ export class Simulation {
     for (let i = this.dropOneBalls.length - 1; i >= 0; i--) {
       const ball = this.dropOneBalls[i];
       ball.step(dt, hopDuration);
+      this._consumeHitPin(ball);
       if (ball.state === 'settled') {
         this.settleBall(ball);
         this.dropOneBalls.splice(i, 1);
@@ -120,6 +154,7 @@ export class Simulation {
     for (let i = this.activeBalls.length - 1; i >= 0; i--) {
       const ball = this.activeBalls[i];
       ball.step(dt, hopDuration);
+      this._consumeHitPin(ball);
 
       if (ball.state === 'settled') {
         this.settleBall(ball);

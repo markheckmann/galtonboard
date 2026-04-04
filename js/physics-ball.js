@@ -38,6 +38,7 @@ export class PhysicsBall {
     this.highlightTimer = 0;
     this.trailPoints = [];
     this.maxTrail = 20;
+    this.hitPin = null;
 
     // Bin stacking
     this.binIndex = -1;
@@ -100,6 +101,16 @@ export class PhysicsBall {
         if (this.path[i] === 'R') col++;
       }
       this.currentCol = col;
+
+      // Signal pin hit for flash effect
+      // The pin column is based on decisions before this row (path[0..currentRow-1])
+      if (this.currentRow >= 0 && this.currentRow < this.board.numRows) {
+        let pinCol = 0;
+        for (let i = 0; i < this.currentRow && i < this.path.length; i++) {
+          if (this.path[i] === 'R') pinCol++;
+        }
+        this.hitPin = { row: this.currentRow, col: pinCol };
+      }
 
       this.sourceX = this.targetX;
       this.sourceY = this.targetY;

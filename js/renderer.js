@@ -19,6 +19,7 @@ const THEMES = {
     expectedCurve: '#ff4444',
     bgCurveFill: 'rgba(65, 131, 215, 0.08)',
     bgCurveStroke: 'rgba(65, 131, 215, 0.2)',
+    pinFlash: '#ffffff',
   },
   light: {
     bgGrad1: '#eef2f7',
@@ -38,6 +39,7 @@ const THEMES = {
     expectedCurve: '#cc2222',
     bgCurveFill: 'rgba(50, 110, 200, 0.07)',
     bgCurveStroke: 'rgba(50, 110, 200, 0.15)',
+    pinFlash: '#ff9933',
   },
 };
 
@@ -77,7 +79,7 @@ export class Renderer {
     if (this.showBackgroundCurve) {
       this.drawBackgroundCurve(board, simulation, stats);
     }
-    this.drawPins(board);
+    this.drawPins(board, simulation);
 
     if (this.showPascal) {
       this.drawPascalOverlay(board, stats);
@@ -131,15 +133,34 @@ export class Renderer {
     ctx.fill();
   }
 
-  drawPins(board) {
+  drawPins(board, simulation) {
     const ctx = this.ctx;
-    ctx.fillStyle = this.theme.pin;
+    const flashes = simulation.pinFlashes;
 
-    for (const row of board.pins) {
-      for (const pin of row) {
-        ctx.beginPath();
-        ctx.arc(pin.x, pin.y, board.pinRadius, 0, Math.PI * 2);
-        ctx.fill();
+    for (let r = 0; r < board.pins.length; r++) {
+      const row = board.pins[r];
+      for (let c = 0; c < row.length; c++) {
+        const pin = row[c];
+        const flash = flashes[r] ? flashes[r][c] : 0;
+
+        if (flash > 0) {
+          // Glow effect
+          const intensity = flash / 0.3; // 0→1
+          ctx.shadowColor = this.theme.pinFlash;
+          ctx.shadowBlur = 8 * intensity;
+          ctx.fillStyle = this.theme.pinFlash;
+          ctx.globalAlpha = 0.4 + 0.6 * intensity;
+          ctx.beginPath();
+          ctx.arc(pin.x, pin.y, board.pinRadius * (1 + 0.5 * intensity), 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          ctx.globalAlpha = 1;
+        } else {
+          ctx.fillStyle = this.theme.pin;
+          ctx.beginPath();
+          ctx.arc(pin.x, pin.y, board.pinRadius, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
     }
   }
