@@ -50,6 +50,7 @@ const biasLeft = document.getElementById('bias-left');
 const biasRight = document.getElementById('bias-right');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
+const physicsCheck = document.getElementById('physics-check');
 const themeCheck = document.getElementById('theme-check');
 const pascalCheck = document.getElementById('pascal-check');
 const pctCheck = document.getElementById('pct-check');
@@ -134,6 +135,13 @@ dropOneBtn.addEventListener('click', () => {
 // Sequential mode
 sequentialCheck.addEventListener('change', () => {
   simulation.sequentialMode = sequentialCheck.checked;
+});
+
+// Physics mode
+physicsCheck.addEventListener('change', () => {
+  simulation.physicsMode = physicsCheck.checked;
+  simulation.reset();
+  updateStatsDisplay();
 });
 
 // Theme

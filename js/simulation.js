@@ -1,6 +1,7 @@
 // Main simulation loop: spawning, stepping, settling, timing control
 
 import { Ball } from './ball.js';
+import { PhysicsBall } from './physics-ball.js';
 
 export class Simulation {
   constructor(board, stats) {
@@ -15,6 +16,7 @@ export class Simulation {
     this.speedMultiplier = 1;
     this.dropRate = 1; // balls per second
     this.bias = 0.5; // probability of going right (0.5 = fair)
+    this.physicsMode = true;
     this.sequentialMode = false; // wait for previous ball to pass 2 pins before dropping next
     this.totalBallsToSpawn = 500;
     this.totalBallsSpawned = 0;
@@ -114,15 +116,21 @@ export class Simulation {
     }
   }
 
+  _createBall() {
+    return this.physicsMode
+      ? new PhysicsBall(this.board, this.bias)
+      : new Ball(this.board, this.bias);
+  }
+
   spawnBall() {
-    const ball = new Ball(this.board, this.bias);
+    const ball = this._createBall();
     this.activeBalls.push(ball);
     this.totalBallsSpawned++;
     return ball;
   }
 
   dropOneBall() {
-    const ball = new Ball(this.board, this.bias);
+    const ball = this._createBall();
     this.dropOneBalls.push(ball);
     return ball;
   }
