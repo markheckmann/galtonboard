@@ -123,11 +123,15 @@ speedSlider.addEventListener('input', () => {
 });
 
 // Drop rate (exponential: slider 0–100 maps to 1–10000)
+// Drop rate mapping:
+// slider 0 = 0, 1-8 = 0.25 to 2.0 (0.25 steps),
+// 9-18 = 3 to 12 (integer steps), 19-100 = 13 to 10000 (exponential)
 function sliderToRate(val) {
   if (val === 0) return 0;
-  if (val === 1) return 0.25;
-  if (val === 2) return 0.5;
-  return Math.round(Math.pow(10, (val - 2) / 98 * 4)); // 1 to 10000
+  if (val <= 8) return val * 0.25;
+  if (val <= 18) return val - 6;
+  const raw = 12 * Math.pow(10000 / 12, (val - 18) / 82);
+  return Math.round(raw);
 }
 document.getElementById('rate-minus').addEventListener('click', () => {
   rateSlider.value = Math.max(0, parseInt(rateSlider.value) - 1);
