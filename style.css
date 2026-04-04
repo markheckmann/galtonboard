@@ -328,11 +328,11 @@ button {
   accent-color: var(--accent);
 }
 
-/* --- Stats overlay (top-right of canvas, beside theme/fullscreen buttons) --- */
+/* --- Stats overlay (top-right of canvas, below theme/fullscreen buttons) --- */
 .stats-overlay {
   position: absolute;
-  top: 6px;
-  right: 90px;
+  top: 40px;
+  right: 10px;
   background: var(--bg-sidebar);
   border-radius: 6px;
   padding: 8px 12px;
