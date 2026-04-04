@@ -4,6 +4,7 @@ export class Board {
   constructor(numRows = 10) {
     this.numRows = numRows;
     this.numBins = numRows + 1;
+    this.compactMode = false;
     this.pins = [];
     this.binRects = [];
     this.pinRadius = 4;
@@ -34,13 +35,22 @@ export class Board {
     this.binTopY = canvasHeight - binAreaHeight;
 
     // Compute spacing based on available area
-    this.pinSpacingY = Math.min(pinAreaHeight / (this.numRows + 1), 50);
+    // In compact mode, cap to what 10 rows would produce (so low row counts don't get huge)
+    const refRows = 10;
+    const maxSpacingY = this.compactMode ? pinAreaHeight / (refRows + 1) : 50;
+    const maxSpacingX = this.compactMode ? (canvasWidth - 40) / (refRows + 1) : 50;
+    this.pinSpacingY = Math.min(pinAreaHeight / (this.numRows + 1), maxSpacingY);
     // Horizontal spacing: ensure bins fit within canvas
     const maxBinWidth = (canvasWidth - 40) / this.numBins;
-    this.pinSpacingX = Math.min(maxBinWidth, 50);
+    this.pinSpacingX = Math.min(maxBinWidth, maxSpacingX);
 
-    this.ballRadius = Math.min(this.pinSpacingX * 0.25, 6);
-    this.pinRadius = Math.min(this.pinSpacingX * 0.08, 4);
+    if (this.compactMode) {
+      this.ballRadius = this.pinSpacingX * 0.25;
+      this.pinRadius = this.pinSpacingX * 0.08;
+    } else {
+      this.ballRadius = Math.min(this.pinSpacingX * 0.25, 6);
+      this.pinRadius = Math.min(this.pinSpacingX * 0.08, 4);
+    }
 
     // Compute pin positions
     this.pins = [];

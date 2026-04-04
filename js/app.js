@@ -52,6 +52,7 @@ const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
 const physicsCheck = document.getElementById('physics-check');
 const themeCheck = document.getElementById('theme-check');
+const compactCheck = document.getElementById('compact-check');
 const pascalCheck = document.getElementById('pascal-check');
 const pctCheck = document.getElementById('pct-check');
 const curveCheck = document.getElementById('curve-check');
@@ -68,6 +69,14 @@ rowsSlider.addEventListener('change', () => {
 });
 rowsSlider.addEventListener('input', () => {
   rowsValue.textContent = rowsSlider.value;
+});
+
+// Compact / auto-scale
+compactCheck.addEventListener('change', () => {
+  board.compactMode = compactCheck.checked;
+  board.recalculate(board.canvasWidth, board.canvasHeight);
+  simulation.reset();
+  updateStatsDisplay();
 });
 
 // Bias
