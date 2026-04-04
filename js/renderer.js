@@ -232,8 +232,8 @@ export class Renderer {
 
     // Own scale: fit the tallest expected bar into the available bin area
     let topReserve = 15;
-    if (this.showPascal) topReserve += this.pascalFontSize + 6;
-    if (this.showDistLines) topReserve += this.labelFontSize + 12;
+    if (this.showDistLines) topReserve += this.labelFontSize + 16;
+    if (this.showPascal) topReserve += this.pascalFontSize + 4;
     if (this.labelFontSize > 0) topReserve += this.labelFontSize;
     const totalBinHeight = board.binFloorY - board.binTopY;
     const availableHeight = Math.max(totalBinHeight * 0.3, totalBinHeight - topReserve);
@@ -305,8 +305,8 @@ export class Renderer {
     const maxCount = Math.max(1, ...simulation.binStacks);
     const maxBarHeight = maxCount * ballDiam;
     let topReserve = 15;
-    if (this.showPascal) topReserve += this.pascalFontSize + 6;
-    if (this.showDistLines) topReserve += this.labelFontSize + 12;
+    if (this.showDistLines) topReserve += this.labelFontSize + 16;
+    if (this.showPascal) topReserve += this.pascalFontSize + 4;
     if (this.labelFontSize > 0) topReserve += this.labelFontSize;
     const totalBinHeight = board.binFloorY - board.binTopY;
     const availableHeight = Math.max(totalBinHeight * 0.3, totalBinHeight - topReserve);
@@ -504,9 +504,8 @@ export class Renderer {
     const meanX = binToX(mean);
     const stdLeftX = binToX(mean - stddev);
     const stdRightX = binToX(mean + stddev);
-    // Position above the bin area, below Pascal final row if shown
-    const pascalSpace = this.showPascal ? this.pascalFontSize + 6 : 0;
-    const distTop = board.binTopY - 30 - pascalSpace;
+    // Position above the bin area (Pascal final row is now below these)
+    const distTop = board.binTopY - 25;
     const bottom = board.binFloorY;
     const labelY = distTop + this.labelFontSize + 2;
 
@@ -648,7 +647,7 @@ export class Renderer {
       }
     }
 
-    // Final row: distribution numbers centered above each bin
+    // Final row: positioned as if the triangle continued (row = numRows)
     const finalRow = stats.getPascalRow(board.numRows);
     const maxFinalText = this._formatPascal(Math.max(...finalRow));
     const finalTextWidth = ctx.measureText(maxFinalText).width;
@@ -656,19 +655,18 @@ export class Renderer {
 
     ctx.fillStyle = this.theme.pascalFinalText;
     for (let c = 0; c < finalRow.length; c++) {
-      const bin = board.binRects[c];
-      const cx = bin.x + bin.width / 2;
+      const pos = board.getPinPosition(board.numRows, c);
       const label = this._formatPascal(finalRow[c]);
       if (finalNeedsRotation) {
         ctx.save();
-        ctx.translate(cx, board.binTopY - 6);
+        ctx.translate(pos.x, pos.y - board.pinRadius - 4);
         ctx.rotate(-Math.PI / 6);
         ctx.textAlign = 'right';
         ctx.fillText(label, 0, 0);
         ctx.restore();
       } else {
         ctx.textAlign = 'center';
-        ctx.fillText(label, cx, board.binTopY - 6);
+        ctx.fillText(label, pos.x, pos.y - board.pinRadius - 4);
       }
     }
   }
