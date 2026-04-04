@@ -60,6 +60,7 @@ export class Renderer {
     this.labelFontSize = 10;
     this.pascalFontSize = 9;
     this.showDistLines = false;
+    this.trailWidth = 1;
     this.theme = THEMES.dark;
   }
 
@@ -208,13 +209,22 @@ export class Renderer {
   }
 
   drawBackgroundCurve(board, simulation, stats) {
-    if (simulation.totalBallsToSpawn < 2) return;
+    if (simulation.totalBallsToSpawn < 2 || board.numBins < 2 || !board.binRects.length) return;
     const ctx = this.ctx;
     const p = simulation.bias != null ? simulation.bias : 0.5;
     const expected = stats.getExpectedDistribution(board.numRows, simulation.totalBallsToSpawn, p);
+    const maxExpected = Math.max(1, ...expected);
+
+    // Own scale: fit the tallest expected bar into the available bin area
+    let topReserve = 15;
+    if (this.showPascal) topReserve += this.pascalFontSize + 6;
+    if (this.showDistLines) topReserve += this.labelFontSize + 12;
+    if (this.labelFontSize > 0) topReserve += this.labelFontSize;
+    const totalBinHeight = board.binFloorY - board.binTopY;
+    const availableHeight = Math.max(totalBinHeight * 0.3, totalBinHeight - topReserve);
     const ballDiam = board.ballRadius * 2;
-    const maxExpected = Math.max(...expected);
-    const scale = this._getBinScale(board, simulation, maxExpected);
+    const maxBarHeight = maxExpected * ballDiam;
+    const scale = maxBarHeight > availableHeight ? availableHeight / maxBarHeight : 1;
 
     // Build curve points
     const points = [];
@@ -225,36 +235,21 @@ export class Renderer {
       points.push({ x: cx, y: board.binFloorY - barH });
     }
 
-    // Draw filled area with smooth curve
+    const last = points[points.length - 1];
+
+    // Draw filled area
     ctx.beginPath();
     ctx.moveTo(points[0].x, board.binFloorY);
-    ctx.lineTo(points[0].x, points[0].y);
-
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const cpx = (prev.x + curr.x) / 2;
-      ctx.quadraticCurveTo(prev.x, prev.y, cpx, (prev.y + curr.y) / 2);
-    }
-    // Final segment
-    const last = points[points.length - 1];
-    ctx.lineTo(last.x, last.y);
+    for (const pt of points) ctx.lineTo(pt.x, pt.y);
     ctx.lineTo(last.x, board.binFloorY);
     ctx.closePath();
-
     ctx.fillStyle = this.theme.bgCurveFill;
     ctx.fill();
 
     // Stroke the curve top
     ctx.beginPath();
     ctx.moveTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-      const cpx = (prev.x + curr.x) / 2;
-      ctx.quadraticCurveTo(prev.x, prev.y, cpx, (prev.y + curr.y) / 2);
-    }
-    ctx.lineTo(last.x, last.y);
+    for (let i = 1; i < points.length; i++) ctx.lineTo(points[i].x, points[i].y);
     ctx.strokeStyle = this.theme.bgCurveStroke;
     ctx.lineWidth = 1.5;
     ctx.stroke();
@@ -289,16 +284,17 @@ export class Renderer {
   }
 
   // Compute the scale factor so the tallest bin/curve fits within the bin area
-  _getBinScale(board, simulation, extraMax = 0) {
+  // Scale for settled balls, expected curve, bin counts, splashes — based on actual bins only
+  _getBinScale(board, simulation) {
     const ballDiam = board.ballRadius * 2;
-    const maxCount = Math.max(1, ...simulation.binStacks, extraMax);
+    const maxCount = Math.max(1, ...simulation.binStacks);
     const maxBarHeight = maxCount * ballDiam;
-    // Reserve space at top for overlays (Pascal row, dist lines, bar labels)
-    let topReserve = 15; // base margin + label space
+    let topReserve = 15;
     if (this.showPascal) topReserve += this.pascalFontSize + 6;
     if (this.showDistLines) topReserve += this.labelFontSize + 12;
     if (this.labelFontSize > 0) topReserve += this.labelFontSize;
-    const availableHeight = board.binFloorY - board.binTopY - topReserve;
+    const totalBinHeight = board.binFloorY - board.binTopY;
+    const availableHeight = Math.max(totalBinHeight * 0.3, totalBinHeight - topReserve);
     return maxBarHeight > availableHeight ? availableHeight / maxBarHeight : 1;
   }
 
@@ -365,25 +361,39 @@ export class Renderer {
     if (points.length < 2) return;
     const color = ball.getColor();
     const maxAlpha = ball.highlighted ? 0.6 : 0.2;
-    const lineWidth = ball.highlighted ? 2 : 1;
+    const baseWidth = ball.highlighted ? Math.max(2, this.trailWidth) : this.trailWidth;
     const trailDuration = board.trailDuration || 5;
+    const useGlow = baseWidth >= 3; // soft edges for thick trails
 
     for (let i = 0; i < points.length - 1; i++) {
-      // Alpha based on remaining time-to-live
       const ttl = points[i].ttl != null ? points[i].ttl : 0;
       if (ttl <= 0) continue;
       const maxTtl = Math.max(trailDuration, ball.highlighted ? 5 : 1);
       const alpha = Math.min(1, ttl / maxTtl) * maxAlpha;
       if (alpha < 0.005) continue;
+
       ctx.beginPath();
       ctx.moveTo(points[i].x, points[i].y);
       ctx.lineTo(points[i + 1].x, points[i + 1].y);
       ctx.globalAlpha = alpha;
       ctx.strokeStyle = color;
-      ctx.lineWidth = lineWidth;
+      ctx.lineWidth = baseWidth;
+      ctx.lineCap = 'round';
+
+      if (useGlow) {
+        ctx.shadowColor = color;
+        ctx.shadowBlur = baseWidth * 0.6;
+      }
+
       ctx.stroke();
     }
+
+    if (useGlow) {
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+    }
     ctx.globalAlpha = 1;
+    ctx.lineCap = 'butt';
   }
 
   _drawPredictedPath(ball, board) {
