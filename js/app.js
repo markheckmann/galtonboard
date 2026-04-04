@@ -49,6 +49,10 @@ const biasSlider = document.getElementById('bias-slider');
 const biasValue = document.getElementById('bias-value');
 const biasLeft = document.getElementById('bias-left');
 const biasRight = document.getElementById('bias-right');
+const labelSizeSlider = document.getElementById('label-size-slider');
+const labelSizeValue = document.getElementById('label-size-value');
+const pascalSizeSlider = document.getElementById('pascal-size-slider');
+const pascalSizeValue = document.getElementById('pascal-size-value');
 const trailSlider = document.getElementById('trail-slider');
 const trailValue = document.getElementById('trail-value');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
@@ -154,6 +158,20 @@ physicsCheck.addEventListener('change', () => {
   simulation.physicsMode = physicsCheck.checked;
   simulation.reset();
   updateStatsDisplay();
+});
+
+// Label size
+labelSizeSlider.addEventListener('input', () => {
+  const size = parseInt(labelSizeSlider.value);
+  renderer.labelFontSize = size;
+  labelSizeValue.textContent = size;
+});
+
+// Pascal label size
+pascalSizeSlider.addEventListener('input', () => {
+  const size = parseInt(pascalSizeSlider.value);
+  renderer.pascalFontSize = size;
+  pascalSizeValue.textContent = size;
 });
 
 // Trail duration (seconds)

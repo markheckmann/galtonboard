@@ -53,6 +53,8 @@ export class Renderer {
     this.showPercentages = false;
     this.showBackgroundCurve = false;
     this.abbreviatePascal = false;
+    this.labelFontSize = 10;
+    this.pascalFontSize = 9;
     this.theme = THEMES.dark;
   }
 
@@ -407,10 +409,11 @@ export class Renderer {
   }
 
   drawBinCounts(board, simulation, stats) {
+    if (this.labelFontSize <= 0) return;
     const ctx = this.ctx;
     const ballDiam = board.ballRadius * 2;
     const scale = this._getBinScale(board, simulation);
-    ctx.font = '10px sans-serif';
+    ctx.font = `${this.labelFontSize}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.fillStyle = this.theme.binCountText;
 
@@ -489,8 +492,9 @@ export class Renderer {
   }
 
   drawPascalOverlay(board, stats) {
+    if (this.pascalFontSize <= 0) return;
     const ctx = this.ctx;
-    ctx.font = '9px monospace';
+    ctx.font = `${this.pascalFontSize}px monospace`;
     ctx.fillStyle = this.theme.pascalText;
 
     for (let r = 0; r < board.numRows; r++) {
