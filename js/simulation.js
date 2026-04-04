@@ -17,6 +17,7 @@ export class Simulation {
     this.dropRate = 1; // balls per second
     this.bias = 0.5; // probability of going right (0.5 = fair)
     this.physicsMode = true;
+    this.trailLength = 10; // default trail length for all balls
     this.sequentialMode = false; // wait for previous ball to pass 2 pins before dropping next
     this.totalBallsToSpawn = 500;
     this.totalBallsSpawned = 0;
@@ -87,6 +88,13 @@ export class Simulation {
 
   update(dt) {
     const hopDuration = this.baseHopDuration / this.speedMultiplier;
+
+    // Decay trails for all balls (including settled)
+    for (const ball of this.activeBalls) ball.decayTrail(dt);
+    for (const ball of this.dropOneBalls) ball.decayTrail(dt);
+    for (const ball of this.settledBalls) {
+      if (ball.trailPoints.length > 0) ball.decayTrail(dt);
+    }
 
     // Decay pin flashes
     for (let r = 0; r < this.pinFlashes.length; r++) {

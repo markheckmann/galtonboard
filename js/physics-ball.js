@@ -125,16 +125,24 @@ export class PhysicsBall {
       this._computeNextTarget();
     }
 
-    // Record trail for highlighted balls
-    if (this.highlighted) {
-      this.trailPoints.push({ x: this.visualX, y: this.visualY });
-      if (this.trailPoints.length > this.maxTrail) {
-        this.trailPoints.shift();
-      }
+    // Record trail with time-based decay
+    const trailDuration = this.board.trailDuration || 0;
+    if (trailDuration > 0 || this.highlighted) {
+      const dur = this.highlighted ? Math.max(trailDuration, 5) : trailDuration;
+      this.trailPoints.push({ x: this.visualX, y: this.visualY, ttl: dur });
     }
   }
 
   // --- Same interface as Ball for renderer compatibility ---
+
+  decayTrail(dt) {
+    for (let i = this.trailPoints.length - 1; i >= 0; i--) {
+      this.trailPoints[i].ttl -= dt;
+      if (this.trailPoints[i].ttl <= 0) {
+        this.trailPoints.splice(i, 1);
+      }
+    }
+  }
 
   setHighlighted(highlighted, colorIndex) {
     this.highlighted = highlighted;

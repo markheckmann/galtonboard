@@ -244,9 +244,9 @@ export class Renderer {
     const ctx = this.ctx;
 
     for (const ball of [...simulation.activeBalls, ...simulation.dropOneBalls]) {
-      // Draw trail for highlighted balls
-      if (ball.highlighted && ball.trailPoints.length > 1) {
-        this._drawTrail(ball);
+      // Draw trail (faint for normal, bright for highlighted)
+      if (ball.trailPoints.length > 1 && (ball.highlighted || board.trailDuration > 0)) {
+        this._drawTrail(ball, board);
       }
 
       ctx.beginPath();
@@ -281,6 +281,13 @@ export class Renderer {
     const ctx = this.ctx;
     const ballDiam = board.ballRadius * 2;
     const scale = this._getBinScale(board, simulation);
+
+    // Draw fading trails from settled balls
+    for (const ball of simulation.settledBalls) {
+      if (ball.trailPoints.length > 1) {
+        this._drawTrail(ball, board);
+      }
+    }
 
     for (let binIdx = 0; binIdx < board.numBins; binIdx++) {
       const count = simulation.binStacks[binIdx];
@@ -327,19 +334,27 @@ export class Renderer {
     }
   }
 
-  _drawTrail(ball) {
+  _drawTrail(ball, board) {
     const ctx = this.ctx;
     const points = ball.trailPoints;
+    if (points.length < 2) return;
     const color = ball.getColor();
+    const maxAlpha = ball.highlighted ? 0.6 : 0.2;
+    const lineWidth = ball.highlighted ? 2 : 1;
+    const trailDuration = board.trailDuration || 5;
 
     for (let i = 0; i < points.length - 1; i++) {
-      const alpha = (i / points.length) * 0.6;
+      // Alpha based on remaining time-to-live
+      const ttl = points[i].ttl != null ? points[i].ttl : 1;
+      const maxTtl = ball.highlighted ? Math.max(trailDuration, 5) : trailDuration;
+      const alpha = Math.max(0, (ttl / maxTtl)) * maxAlpha;
+      if (alpha < 0.005) continue;
       ctx.beginPath();
       ctx.moveTo(points[i].x, points[i].y);
       ctx.lineTo(points[i + 1].x, points[i + 1].y);
       ctx.globalAlpha = alpha;
       ctx.strokeStyle = color;
-      ctx.lineWidth = 2;
+      ctx.lineWidth = lineWidth;
       ctx.stroke();
     }
     ctx.globalAlpha = 1;

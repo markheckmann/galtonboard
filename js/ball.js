@@ -97,12 +97,11 @@ export class Ball {
     this.visualX = this.sourceX + (this.targetX - this.sourceX) * eased + wobbleX;
     this.visualY = this.sourceY + (this.targetY - this.sourceY) * eased;
 
-    // Record trail for highlighted balls
-    if (this.highlighted) {
-      this.trailPoints.push({ x: this.visualX, y: this.visualY });
-      if (this.trailPoints.length > this.maxTrail) {
-        this.trailPoints.shift();
-      }
+    // Record trail with time-based decay
+    const trailDuration = this.board.trailDuration || 0;
+    if (trailDuration > 0 || this.highlighted) {
+      const dur = this.highlighted ? Math.max(trailDuration, 5) : trailDuration;
+      this.trailPoints.push({ x: this.visualX, y: this.visualY, ttl: dur });
     }
 
     if (this.progress >= 1) {
@@ -156,6 +155,15 @@ export class Ball {
       return HIGHLIGHT_COLORS[this.highlightColorIndex % HIGHLIGHT_COLORS.length];
     }
     return 'rgba(65, 131, 215, 0.85)';
+  }
+
+  decayTrail(dt) {
+    for (let i = this.trailPoints.length - 1; i >= 0; i--) {
+      this.trailPoints[i].ttl -= dt;
+      if (this.trailPoints[i].ttl <= 0) {
+        this.trailPoints.splice(i, 1);
+      }
+    }
   }
 
   getPathString() {

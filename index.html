@@ -91,6 +91,17 @@
 
       <hr class="separator">
 
+      <!-- Trail Duration -->
+      <div class="control-group">
+        <label>Trail Duration (sec)</label>
+        <div class="control-row">
+          <input type="range" id="trail-slider" min="0" max="30" value="2" step="0.5" title="How long the trail remains visible in seconds. Set to 0 to disable trails.">
+          <span class="value-display" id="trail-value">2s</span>
+        </div>
+      </div>
+
+      <hr class="separator">
+
       <!-- Overlay Toggles -->
       <div class="toggle-group">
         <label title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>

@@ -25,6 +25,7 @@ function resizeCanvas() {
 }
 
 resizeCanvas();
+board.trailDuration = 2; // default trail duration in seconds
 stats.reset(board.numBins);
 
 const resizeObserver = new ResizeObserver(() => {
@@ -48,6 +49,8 @@ const biasSlider = document.getElementById('bias-slider');
 const biasValue = document.getElementById('bias-value');
 const biasLeft = document.getElementById('bias-left');
 const biasRight = document.getElementById('bias-right');
+const trailSlider = document.getElementById('trail-slider');
+const trailValue = document.getElementById('trail-value');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
 const physicsCheck = document.getElementById('physics-check');
@@ -151,6 +154,19 @@ physicsCheck.addEventListener('change', () => {
   simulation.physicsMode = physicsCheck.checked;
   simulation.reset();
   updateStatsDisplay();
+});
+
+// Trail duration (seconds)
+trailSlider.addEventListener('input', () => {
+  const dur = parseFloat(trailSlider.value);
+  board.trailDuration = dur;
+  trailValue.textContent = dur > 0 ? dur + 's' : 'off';
+  // Clear all trails immediately when turned off
+  if (dur === 0) {
+    for (const ball of [...simulation.activeBalls, ...simulation.settledBalls, ...simulation.dropOneBalls]) {
+      if (!ball.highlighted) ball.trailPoints = [];
+    }
+  }
 });
 
 // Theme
