@@ -163,9 +163,55 @@ resetBtn.addEventListener('click', () => {
   updateStatsDisplay();
 });
 
+// Reset Settings — restore all controls to defaults
+document.getElementById('reset-settings-btn').addEventListener('click', () => {
+  // Sliders
+  rowsSlider.value = 10; rowsValue.textContent = '10'; board.setNumRows(10);
+  biasSlider.value = 50; updateBiasDisplay(50); simulation.bias = 0.5;
+  ballsInput.value = 1000; simulation.totalBallsToSpawn = 1000;
+  speedSlider.value = 4; simulation.speedMultiplier = speedSteps[4]; speedValue.textContent = speedSteps[4] + 'x';
+  rateSlider.value = 4; simulation.dropRate = sliderToRate(4); rateValue.textContent = sliderToRate(4);
+  trailSlider.value = 2; board.trailDuration = 2; trailValue.textContent = '2s';
+  trailWidthSlider.value = 1; renderer.trailWidth = 1; trailWidthValue.textContent = '1';
+  trailAlphaSlider.value = 0.2; renderer.trailAlpha = 0.2; trailAlphaValue.textContent = '0.20';
+  labelSizeSlider.value = 14; renderer.labelFontSize = 14; labelSizeValue.textContent = '14';
+  pascalSizeSlider.value = 9; renderer.pascalFontSize = 9; pascalSizeValue.textContent = '9';
+
+  // Checkboxes
+  sequentialCheck.checked = false; simulation.sequentialMode = false;
+  physicsCheck.checked = true; simulation.physicsMode = true;
+  compactCheck.checked = false; board.compactMode = false;
+  pascalCheck.checked = false; renderer.showPascal = false;
+  pascalAbbrCheck.checked = false; renderer.abbreviatePascal = false;
+  bgCurveCheck.checked = false; renderer.showBackgroundCurve = false;
+  curveCheck.checked = false; renderer.showExpectedCurve = false;
+  distlinesCheck.checked = false; renderer.showDistLines = false;
+  pctCheck.checked = false; renderer.showPercentages = false;
+  statsCheck.checked = true; renderer.showStats = true; statsPanel.style.display = 'block';
+
+  // Theme
+  lightMode = false;
+  document.body.classList.remove('light');
+  renderer.setLightMode(false);
+  themeBtn.classList.remove('active');
+
+  // Recalculate and reset
+  board.recalculate(board.canvasWidth, board.canvasHeight);
+  simulation.reset();
+  simulation.pause();
+  playPauseBtn.textContent = 'Play';
+  playPauseBtn.classList.remove('active');
+  updateStatsDisplay();
+  updateProgress();
+
+  // Clear URL hash
+  history.replaceState(null, '', window.location.pathname);
+});
+
 // Drop One Ball
 dropOneBtn.addEventListener('click', () => {
-  simulation.dropOneBall();
+  const ball = simulation.dropOneBall();
+  simulation.toggleHighlight(ball);
 });
 
 // Sequential mode
