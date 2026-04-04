@@ -100,8 +100,6 @@
 
       <!-- Overlay Toggles -->
       <div class="toggle-group">
-        <label title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
-        <label title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
         <label title="Show the theoretical bell curve shape for the total number of balls. This is the distribution the histogram will converge toward."><input type="checkbox" id="bgcurve-check"> Target Bell Curve</label>
         <label title="Show a dashed line for the expected distribution based on balls settled so far. Compare it with the actual histogram."><input type="checkbox" id="curve-check"> Expected Curve</label>
         <label title="Show mean (μ) and ±1 standard deviation (σ) lines on the histogram."><input type="checkbox" id="distlines-check"> Mean / Std Dev Lines</label>
@@ -120,9 +118,11 @@
       <div class="control-group" title="Font size for Pascal's Triangle numbers on the pins. Set to 0 to hide.">
         <label>Pascal Label Size</label>
         <div class="control-row">
-          <input type="range" id="pascal-size-slider" min="0" max="20" value="9" step="1" title="Font size for Pascal's Triangle numbers. Set to 0 to hide.">
+          <input type="range" id="pascal-size-slider" min="0" max="20" value="9" step="1">
           <span class="value-display" id="pascal-size-value">9</span>
         </div>
+        <label class="toggle-inline" title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+        <label class="toggle-inline" title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
       </div>
 
       <!-- Stats Panel -->

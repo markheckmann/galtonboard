@@ -283,7 +283,12 @@ export class Renderer {
     const ballDiam = board.ballRadius * 2;
     const maxCount = Math.max(1, ...simulation.binStacks, extraMax);
     const maxBarHeight = maxCount * ballDiam;
-    const availableHeight = board.binFloorY - board.binTopY - 10;
+    // Reserve space at top for overlays (Pascal row, dist lines, bar labels)
+    let topReserve = 15; // base margin + label space
+    if (this.showPascal) topReserve += this.pascalFontSize + 6;
+    if (this.showDistLines) topReserve += this.labelFontSize + 12;
+    if (this.labelFontSize > 0) topReserve += this.labelFontSize;
+    const availableHeight = board.binFloorY - board.binTopY - topReserve;
     return maxBarHeight > availableHeight ? availableHeight / maxBarHeight : 1;
   }
 
@@ -432,12 +437,12 @@ export class Renderer {
 
       const bin = board.binRects[i];
       const cx = bin.x + bin.width / 2;
-      const topY = board.binFloorY - count * ballDiam * scale;
+      const labelY = board.binFloorY - count * ballDiam * scale - 5;
       if (this.showPercentages && stats.totalSettled > 0) {
         const pct = (count / stats.totalSettled * 100).toFixed(1) + '%';
-        ctx.fillText(pct, cx, topY - 5);
+        ctx.fillText(pct, cx, labelY);
       } else {
-        ctx.fillText(count, cx, topY - 5);
+        ctx.fillText(count, cx, labelY);
       }
     }
   }
@@ -456,12 +461,15 @@ export class Renderer {
     const meanX = binToX(mean);
     const stdLeftX = binToX(mean - stddev);
     const stdRightX = binToX(mean + stddev);
-    const top = board.binTopY - 15;
+    // Position above the bin area, below Pascal final row if shown
+    const pascalSpace = this.showPascal ? this.pascalFontSize + 6 : 0;
+    const distTop = board.binTopY - 30 - pascalSpace;
     const bottom = board.binFloorY;
+    const labelY = distTop + this.labelFontSize + 2;
 
     // Mean line
     ctx.beginPath();
-    ctx.moveTo(meanX, top);
+    ctx.moveTo(meanX, distTop);
     ctx.lineTo(meanX, bottom);
     ctx.strokeStyle = this.theme.meanLine;
     ctx.lineWidth = 2;
@@ -473,7 +481,7 @@ export class Renderer {
       ctx.font = `${this.labelFontSize}px sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillStyle = this.theme.meanLine;
-      ctx.fillText('\u03BC', meanX, top - 4);
+      ctx.fillText('\u03BC', meanX, labelY);
     }
 
     // +/- 1 stddev lines
@@ -482,19 +490,19 @@ export class Renderer {
     ctx.lineWidth = 1.5;
 
     ctx.beginPath();
-    ctx.moveTo(stdLeftX, top);
+    ctx.moveTo(stdLeftX, distTop);
     ctx.lineTo(stdLeftX, bottom);
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.moveTo(stdRightX, top);
+    ctx.moveTo(stdRightX, distTop);
     ctx.lineTo(stdRightX, bottom);
     ctx.stroke();
 
-    // Stddev bracket line across the top
+    // Stddev bracket line
     ctx.beginPath();
-    ctx.moveTo(stdLeftX, top + 8);
-    ctx.lineTo(stdRightX, top + 8);
+    ctx.moveTo(stdLeftX, labelY + 4);
+    ctx.lineTo(stdRightX, labelY + 4);
     ctx.stroke();
     ctx.setLineDash([]);
 
@@ -503,9 +511,9 @@ export class Renderer {
       ctx.font = `${Math.max(this.labelFontSize - 1, 6)}px sans-serif`;
       ctx.fillStyle = this.theme.stddevLine;
       ctx.textAlign = 'right';
-      ctx.fillText('-1\u03C3', stdLeftX - 3, top + 12);
+      ctx.fillText('-1\u03C3', stdLeftX - 3, labelY);
       ctx.textAlign = 'left';
-      ctx.fillText('+1\u03C3', stdRightX + 3, top + 12);
+      ctx.fillText('+1\u03C3', stdRightX + 3, labelY);
     }
   }
 
