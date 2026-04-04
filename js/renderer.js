@@ -447,8 +447,11 @@ export class Renderer {
 
   drawHighlightedInfo(board, simulation) {
     const ctx = this.ctx;
+    const count = simulation.highlightedBalls.size;
+    if (count === 0) return;
 
-    let infoY = 15;
+    // Draw in bottom-left, above the bin floor
+    let infoY = board.binTopY - 10 - (count - 1) * 16;
     for (const ball of simulation.highlightedBalls) {
       const color = ball.getColor();
       const row = Math.min(ball.currentRow + 1, board.numRows);
