@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galton Board — Interactive Probability Simulator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar Controls -->
+    <aside class="sidebar">
+      <h1>Galton Board
+        <small>Interactive Bean Machine</small>
+      </h1>
+
+      <!-- Pin Rows -->
+      <div class="control-group">
+        <label>Pin Rows</label>
+        <div class="control-row">
+          <input type="range" id="rows-slider" min="1" max="20" value="10">
+          <span class="value-display" id="rows-value">10</span>
+        </div>
+      </div>
+
+      <!-- Total Balls -->
+      <div class="control-group">
+        <label>Total Balls</label>
+        <input type="number" id="balls-input" min="1" max="100000" value="500">
+      </div>
+
+      <hr class="separator">
+
+      <!-- Speed -->
+      <div class="control-group">
+        <label>Speed</label>
+        <div class="control-row">
+          <input type="range" id="speed-slider" min="0" max="7" value="4" step="1">
+          <span class="value-display" id="speed-value">1x</span>
+        </div>
+        <div class="speed-presets">
+          <button class="speed-preset" data-speed="0.5">0.5x</button>
+          <button class="speed-preset" data-speed="1">1x</button>
+          <button class="speed-preset" data-speed="2">2x</button>
+          <button class="speed-preset" data-speed="4">4x</button>
+          <button class="speed-preset" data-speed="8">8x</button>
+        </div>
+      </div>
+
+      <!-- Drop Rate -->
+      <div class="control-group">
+        <label>Drop Rate (balls/sec)</label>
+        <div class="control-row">
+          <input type="range" id="rate-slider" min="0" max="100" value="0" step="1">
+          <span class="value-display" id="rate-value">1</span>
+        </div>
+        <label class="toggle-inline"><input type="checkbox" id="sequential-check"> Sequential (wait 2 pins)</label>
+      </div>
+
+      <hr class="separator">
+
+      <!-- Play/Pause/Reset/Drop One -->
+      <div class="button-row">
+        <button class="btn-primary" id="play-pause-btn">Play</button>
+        <button class="btn-secondary" id="reset-btn">Reset</button>
+        <button class="btn-accent" id="drop-one-btn">Drop One Ball</button>
+      </div>
+
+      <hr class="separator">
+
+      <!-- Overlay Toggles -->
+      <div class="toggle-group">
+        <label><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+        <label><input type="checkbox" id="curve-check"> Expected Curve</label>
+        <label><input type="checkbox" id="pct-check"> Bin Percentages</label>
+        <label><input type="checkbox" id="stats-check" checked> Show Statistics</label>
+      </div>
+
+      <!-- Stats Panel -->
+      <div class="stats-panel" id="stats-panel">
+        <h3>Statistics</h3>
+        <div class="stat-row">
+          <span class="stat-label">Spawned</span>
+          <span class="stat-value" id="stat-spawned">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Settled</span>
+          <span class="stat-value" id="stat-total">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Mean Bin</span>
+          <span class="stat-value" id="stat-mean">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Std Dev</span>
+          <span class="stat-value" id="stat-stddev">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Fit</span>
+          <span class="stat-value fit-label" id="stat-fit">Not enough data</span>
+        </div>
+      </div>
+
+      <!-- Help -->
+      <div class="help-text">
+        Click a ball to track it. Up to 5 balls can be highlighted at once.
+        <br>Keyboard: <b>Space</b> = Play/Pause, <b>R</b> = Reset
+      </div>
+    </aside>
+
+    <!-- Canvas -->
+    <div class="canvas-container">
+      <canvas id="galton-canvas"></canvas>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

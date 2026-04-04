@@ -1,0 +1,201 @@
+// Bootstrap, wire UI controls to simulation, animation frame loop
+
+import { Board } from './board.js';
+import { Simulation } from './simulation.js';
+import { Renderer } from './renderer.js';
+import { Stats } from './stats.js';
+
+const canvas = document.getElementById('galton-canvas');
+const board = new Board(10);
+const stats = new Stats();
+const simulation = new Simulation(board, stats);
+const renderer = new Renderer(canvas);
+
+// --- Canvas sizing ---
+function resizeCanvas() {
+  const container = canvas.parentElement;
+  const dpr = window.devicePixelRatio || 1;
+  const rect = container.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  renderer.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  board.recalculate(rect.width, rect.height);
+}
+
+resizeCanvas();
+stats.reset(board.numBins);
+
+const resizeObserver = new ResizeObserver(() => {
+  resizeCanvas();
+});
+resizeObserver.observe(canvas.parentElement);
+
+// --- UI Controls ---
+const rowsSlider = document.getElementById('rows-slider');
+const rowsValue = document.getElementById('rows-value');
+const ballsInput = document.getElementById('balls-input');
+const speedSlider = document.getElementById('speed-slider');
+const speedValue = document.getElementById('speed-value');
+const rateSlider = document.getElementById('rate-slider');
+const rateValue = document.getElementById('rate-value');
+const playPauseBtn = document.getElementById('play-pause-btn');
+const resetBtn = document.getElementById('reset-btn');
+const dropOneBtn = document.getElementById('drop-one-btn');
+const sequentialCheck = document.getElementById('sequential-check');
+const pascalCheck = document.getElementById('pascal-check');
+const pctCheck = document.getElementById('pct-check');
+const curveCheck = document.getElementById('curve-check');
+const statsCheck = document.getElementById('stats-check');
+const statsPanel = document.getElementById('stats-panel');
+
+// Row count
+rowsSlider.addEventListener('change', () => {
+  const newRows = parseInt(rowsSlider.value);
+  rowsValue.textContent = newRows;
+  board.setNumRows(newRows);
+  simulation.reset();
+  updateStatsDisplay();
+});
+rowsSlider.addEventListener('input', () => {
+  rowsValue.textContent = rowsSlider.value;
+});
+
+// Total balls
+ballsInput.addEventListener('change', () => {
+  simulation.totalBallsToSpawn = Math.max(1, Math.min(100000, parseInt(ballsInput.value) || 500));
+  ballsInput.value = simulation.totalBallsToSpawn;
+});
+
+// Speed
+const speedSteps = [0.05, 0.1, 0.25, 0.5, 1, 2, 4, 8];
+speedSlider.addEventListener('input', () => {
+  const idx = parseInt(speedSlider.value);
+  simulation.speedMultiplier = speedSteps[idx];
+  speedValue.textContent = speedSteps[idx] + 'x';
+});
+
+// Drop rate (exponential: slider 0–100 maps to 1–10000)
+function sliderToRate(val) {
+  return Math.round(Math.pow(10, val / 100 * 4)); // 10^0=1 to 10^4=10000
+}
+rateSlider.addEventListener('input', () => {
+  const rate = sliderToRate(parseInt(rateSlider.value));
+  simulation.dropRate = rate;
+  rateValue.textContent = rate;
+});
+
+// Play/Pause
+playPauseBtn.addEventListener('click', () => {
+  const running = simulation.toggleRunning();
+  playPauseBtn.textContent = running ? 'Pause' : 'Play';
+  playPauseBtn.classList.toggle('active', running);
+});
+
+// Reset
+resetBtn.addEventListener('click', () => {
+  simulation.reset();
+  simulation.pause();
+  playPauseBtn.textContent = 'Play';
+  playPauseBtn.classList.remove('active');
+  updateStatsDisplay();
+});
+
+// Drop One Ball
+dropOneBtn.addEventListener('click', () => {
+  simulation.dropOneBall();
+});
+
+// Sequential mode
+sequentialCheck.addEventListener('change', () => {
+  simulation.sequentialMode = sequentialCheck.checked;
+});
+
+// Toggles
+pascalCheck.addEventListener('change', () => {
+  renderer.showPascal = pascalCheck.checked;
+});
+pctCheck.addEventListener('change', () => {
+  renderer.showPercentages = pctCheck.checked;
+});
+curveCheck.addEventListener('change', () => {
+  renderer.showExpectedCurve = curveCheck.checked;
+});
+statsCheck.addEventListener('change', () => {
+  renderer.showStats = statsCheck.checked;
+  statsPanel.style.display = statsCheck.checked ? 'block' : 'none';
+});
+
+// Speed preset buttons
+document.querySelectorAll('.speed-preset').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const speed = parseFloat(btn.dataset.speed);
+    simulation.speedMultiplier = speed;
+    const idx = speedSteps.indexOf(speed);
+    if (idx >= 0) speedSlider.value = idx;
+    speedValue.textContent = speed + 'x';
+  });
+});
+
+// --- Canvas click for ball selection ---
+canvas.addEventListener('click', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  const ball = simulation.findBallAt(x, y);
+  if (ball) {
+    simulation.toggleHighlight(ball);
+  }
+});
+
+// --- Keyboard shortcuts ---
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return; // Don't capture when typing in inputs
+
+  if (e.code === 'Space') {
+    e.preventDefault();
+    playPauseBtn.click();
+  } else if (e.code === 'KeyR') {
+    resetBtn.click();
+  }
+});
+
+// --- Stats display ---
+function updateStatsDisplay() {
+  const meanEl = document.getElementById('stat-mean');
+  const stddevEl = document.getElementById('stat-stddev');
+  const totalEl = document.getElementById('stat-total');
+  const fitEl = document.getElementById('stat-fit');
+  const spawnedEl = document.getElementById('stat-spawned');
+
+  meanEl.textContent = stats.totalSettled > 0 ? stats.getMean().toFixed(2) : '—';
+  stddevEl.textContent = stats.totalSettled > 0 ? stats.getStdDev().toFixed(2) : '—';
+  totalEl.textContent = stats.totalSettled;
+  spawnedEl.textContent = simulation.totalBallsSpawned;
+  fitEl.textContent = stats.getFitLabel(board.numRows);
+}
+
+// --- Animation loop ---
+let lastTime = 0;
+let statsUpdateTimer = 0;
+
+function frame(timestamp) {
+  const dt = lastTime === 0 ? 0 : Math.min((timestamp - lastTime) / 1000, 0.05); // Cap dt at 50ms
+  lastTime = timestamp;
+
+  simulation.update(dt);
+  renderer.draw(board, simulation, stats);
+
+  // Update stats display periodically (not every frame)
+  statsUpdateTimer += dt;
+  if (statsUpdateTimer > 0.2) {
+    statsUpdateTimer = 0;
+    updateStatsDisplay();
+  }
+
+  requestAnimationFrame(frame);
+}
+
+requestAnimationFrame(frame);
