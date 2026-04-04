@@ -512,10 +512,9 @@ body.light .shortcut-toast {
 }
 
 /* --- Canvas overlay buttons --- */
-.theme-btn {
+.canvas-btn {
   position: absolute;
   top: 10px;
-  right: 50px;
   background: var(--bg-btn-secondary);
   color: var(--text-muted);
   font-size: 18px;
@@ -525,8 +524,52 @@ body.light .shortcut-toast {
   z-index: 10;
 }
 
-.theme-btn:hover {
+.canvas-btn:hover {
   opacity: 1;
+}
+
+.shortcuts-wrapper {
+  position: absolute;
+  top: 10px;
+  right: 90px;
+  z-index: 10;
+}
+
+.shortcuts-btn {
+  position: static;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 11px;
+}
+
+.shortcuts-panel {
+  display: none;
+  position: absolute;
+  top: 32px;
+  right: 0;
+  background: var(--bg-sidebar);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  line-height: 1.8;
+  opacity: 0.9;
+}
+
+.shortcuts-wrapper:hover .shortcuts-panel,
+.shortcuts-panel.visible {
+  display: block;
+}
+
+.shortcuts-panel b {
+  color: var(--text-value);
+  min-width: 36px;
+  display: inline-block;
+}
+
+.theme-btn {
+  right: 50px;
 }
 
 .theme-btn.active {
@@ -535,8 +578,6 @@ body.light .shortcut-toast {
 }
 
 .fullscreen-btn {
-  position: absolute;
-  top: 10px;
   right: 10px;
   background: var(--bg-btn-secondary);
   color: var(--text-muted);

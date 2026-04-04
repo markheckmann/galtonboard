@@ -181,8 +181,21 @@
         <div class="stat-row"><span class="stat-label">Fit</span><span class="stat-value fit-label" id="stat-fit">—</span></div>
       </div>
       <canvas id="galton-canvas"></canvas>
-      <button class="theme-btn" id="theme-btn" title="Switch between dark and light mode">&#9790;</button>
-      <button class="fullscreen-btn" id="fullscreen-btn" title="Toggle fullscreen (F)">&#x26F6;</button>
+      <div class="shortcuts-wrapper">
+        <button class="canvas-btn shortcuts-btn" id="shortcuts-btn" title="Keyboard shortcuts">?</button>
+        <div class="shortcuts-panel" id="shortcuts-panel">
+          <div><b>Space</b> Play / Pause</div>
+          <div><b>R</b> Reset simulation</div>
+          <div><b>D</b> Drop one ball</div>
+          <div><b>F</b> Fullscreen</div>
+          <div><b>←/→</b> Speed −/+</div>
+          <div><b>↑/↓</b> Drop rate −/+</div>
+          <div><b>Esc</b> Close overlay</div>
+          <div><b>Click</b> Track a ball</div>
+        </div>
+      </div>
+      <button class="canvas-btn theme-btn" id="theme-btn" title="Switch between dark and light mode">&#9790;</button>
+      <button class="canvas-btn fullscreen-btn" id="fullscreen-btn" title="Toggle fullscreen (F)">&#x26F6;</button>
       <div class="shortcut-toast" id="shortcut-toast">
         <b>Space</b> Play/Pause &nbsp; <b>R</b> Reset &nbsp; <b>D</b> Drop &nbsp; <b>F</b> Fullscreen &nbsp; <b>←→</b> Speed &nbsp; <b>↑↓</b> Rate &nbsp; Click ball to track
       </div>
