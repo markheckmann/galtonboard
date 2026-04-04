@@ -57,6 +57,8 @@ const trailSlider = document.getElementById('trail-slider');
 const trailValue = document.getElementById('trail-value');
 const trailWidthSlider = document.getElementById('trail-width-slider');
 const trailWidthValue = document.getElementById('trail-width-value');
+const trailAlphaSlider = document.getElementById('trail-alpha-slider');
+const trailAlphaValue = document.getElementById('trail-alpha-value');
 const distlinesCheck = document.getElementById('distlines-check');
 const pascalAbbrCheck = document.getElementById('pascal-abbr-check');
 const bgCurveCheck = document.getElementById('bgcurve-check');
@@ -168,6 +170,13 @@ trailWidthSlider.addEventListener('input', () => {
   const w = parseFloat(trailWidthSlider.value);
   renderer.trailWidth = w;
   trailWidthValue.textContent = w;
+});
+
+// Trail opacity
+trailAlphaSlider.addEventListener('input', () => {
+  const a = parseFloat(trailAlphaSlider.value);
+  renderer.trailAlpha = a;
+  trailAlphaValue.textContent = a.toFixed(2);
 });
 
 // Label size
@@ -341,6 +350,7 @@ function getStateFromURL() {
     pct: p.has('pct') ? p.get('pct') === '1' : null,
     trail: p.has('trail') ? parseFloat(p.get('trail')) : null,
     tw: p.has('tw') ? parseFloat(p.get('tw')) : null,
+    ta: p.has('ta') ? parseFloat(p.get('ta')) : null,
     light: p.has('light') ? p.get('light') === '1' : null,
     labelSize: p.has('ls') ? parseInt(p.get('ls')) : null,
     pascalSize: p.has('ps') ? parseInt(p.get('ps')) : null,
@@ -365,6 +375,7 @@ function saveStateToURL() {
   p.set('pct', pctCheck.checked ? '1' : '0');
   p.set('trail', trailSlider.value);
   p.set('tw', trailWidthSlider.value);
+  p.set('ta', trailAlphaSlider.value);
   p.set('light', lightMode ? '1' : '0');
   p.set('ls', labelSizeSlider.value);
   p.set('ps', pascalSizeSlider.value);
@@ -389,6 +400,7 @@ function applyURLState() {
   if (s.pct != null) { pctCheck.checked = s.pct; renderer.showPercentages = s.pct; }
   if (s.trail != null) { trailSlider.value = s.trail; board.trailDuration = s.trail; trailValue.textContent = s.trail > 0 ? s.trail + 's' : 'off'; }
   if (s.tw != null) { trailWidthSlider.value = s.tw; renderer.trailWidth = s.tw; trailWidthValue.textContent = s.tw; }
+  if (s.ta != null) { trailAlphaSlider.value = s.ta; renderer.trailAlpha = s.ta; trailAlphaValue.textContent = parseFloat(s.ta).toFixed(2); }
   if (s.light != null && s.light) { lightMode = true; document.body.classList.add('light'); renderer.setLightMode(true); themeBtn.classList.add('active'); }
   if (s.labelSize != null) { labelSizeSlider.value = s.labelSize; renderer.labelFontSize = s.labelSize; labelSizeValue.textContent = s.labelSize; }
   if (s.pascalSize != null) { pascalSizeSlider.value = s.pascalSize; renderer.pascalFontSize = s.pascalSize; pascalSizeValue.textContent = s.pascalSize; }
@@ -412,7 +424,7 @@ function scheduleSaveState() {
  labelSizeSlider, pascalSizeSlider, sequentialCheck, physicsCheck, compactCheck,
  pascalCheck, pascalAbbrCheck, bgCurveCheck, distlinesCheck, curveCheck, pctCheck, statsCheck,
  themeBtn].forEach(el => el.addEventListener('change', scheduleSaveState));
-[rowsSlider, biasSlider, speedSlider, rateSlider, trailSlider, trailWidthSlider,
+[rowsSlider, biasSlider, speedSlider, rateSlider, trailSlider, trailWidthSlider, trailAlphaSlider,
  labelSizeSlider, pascalSizeSlider].forEach(el => el.addEventListener('input', scheduleSaveState));
 themeBtn.addEventListener('click', scheduleSaveState);
 

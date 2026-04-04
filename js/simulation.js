@@ -28,6 +28,7 @@ export class Simulation {
 
     // Splash effects when balls land
     this.splashes = [];
+    this._settledWithTrails = []; // settled balls still having visible trails
 
     // Pin flash timers [row][col] — set when a ball hits a pin
     this.pinFlashes = [];
@@ -65,6 +66,7 @@ export class Simulation {
     this.settledBalls = [];
     this.dropOneBalls = [];
     this.splashes = [];
+    this._settledWithTrails = [];
     this._initPinFlashes();
     this.highlightedBalls.clear();
     this.totalBallsSpawned = 0;
@@ -89,11 +91,13 @@ export class Simulation {
   update(dt) {
     const hopDuration = this.baseHopDuration / this.speedMultiplier;
 
-    // Decay trails for all balls (including settled)
-    for (const ball of this.activeBalls) ball.decayTrail(dt);
-    for (const ball of this.dropOneBalls) ball.decayTrail(dt);
-    for (const ball of this.settledBalls) {
-      if (ball.trailPoints.length > 0) ball.decayTrail(dt);
+    // Decay settled trails (whole trail fades uniformly after landing)
+    for (let i = this._settledWithTrails.length - 1; i >= 0; i--) {
+      const ball = this._settledWithTrails[i];
+      ball.decayTrail(dt);
+      if (ball.trailPoints.length === 0) {
+        this._settledWithTrails.splice(i, 1);
+      }
     }
 
     // Decay pin flashes
@@ -207,6 +211,16 @@ export class Simulation {
     ball.visualY = ball.settledY;
 
     this.settledBalls.push(ball);
+    if (ball.trailPoints.length > 0) {
+      // Set TTL on all points so the whole trail fades together
+      const dur = ball.highlighted
+        ? Math.max(this.board.trailDuration || 2, 5)
+        : (this.board.trailDuration || 2);
+      for (const p of ball.trailPoints) {
+        p.ttl = dur;
+      }
+      this._settledWithTrails.push(ball);
+    }
     this.stats.recordBall(binIndex);
 
     // Create splash effect (store bin/stack so position adapts to rescaling)

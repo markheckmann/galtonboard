@@ -93,6 +93,10 @@ export class PhysicsBall {
     this.visualY = this.sourceY + vy0 * t + 0.5 * g * t * t;
 
     if (this.progress >= 1) {
+      // Snap to pin position
+      this.visualX = this.targetX;
+      this.visualY = this.targetY;
+
       // Arrived at next pin — advance
       this.currentRow++;
 
@@ -125,11 +129,14 @@ export class PhysicsBall {
       this._computeNextTarget();
     }
 
-    // Record trail with time-based decay
+    // Record trail with time-based decay (throttle: skip if moved < 2px)
     const trailDuration = this.board.trailDuration || 0;
     if (trailDuration > 0 || this.highlighted) {
-      const dur = this.highlighted ? Math.max(trailDuration, 5) : trailDuration;
-      this.trailPoints.push({ x: this.visualX, y: this.visualY, ttl: dur });
+      const last = this.trailPoints[this.trailPoints.length - 1];
+      const moved = !last || Math.abs(this.visualX - last.x) + Math.abs(this.visualY - last.y) > 2;
+      if (moved) {
+        this.trailPoints.push({ x: this.visualX, y: this.visualY, ttl: 0, hop: this.currentRow });
+      }
     }
   }
 
@@ -137,6 +144,7 @@ export class PhysicsBall {
 
   decayTrail(dt) {
     for (let i = this.trailPoints.length - 1; i >= 0; i--) {
+      if (this.trailPoints[i].ttl <= 0) continue; // active, not decaying
       this.trailPoints[i].ttl -= dt;
       if (this.trailPoints[i].ttl <= 0) {
         this.trailPoints.splice(i, 1);

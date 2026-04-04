@@ -61,6 +61,7 @@ export class Renderer {
     this.pascalFontSize = 9;
     this.showDistLines = false;
     this.trailWidth = 1;
+    this.trailAlpha = 0.2;
     this.theme = THEMES.dark;
   }
 
@@ -303,8 +304,8 @@ export class Renderer {
     const ballDiam = board.ballRadius * 2;
     const scale = this._getBinScale(board, simulation);
 
-    // Draw fading trails from settled balls
-    for (const ball of simulation.settledBalls) {
+    // Draw fading trails from settled balls (only those still having trails)
+    for (const ball of simulation._settledWithTrails) {
       if (ball.trailPoints.length > 1) {
         this._drawTrail(ball, board);
       }
@@ -360,40 +361,48 @@ export class Renderer {
     const points = ball.trailPoints;
     if (points.length < 2) return;
     const color = ball.getColor();
-    const maxAlpha = ball.highlighted ? 0.6 : 0.2;
+    const maxAlpha = ball.highlighted ? Math.max(0.6, this.trailAlpha) : this.trailAlpha;
     const baseWidth = ball.highlighted ? Math.max(2, this.trailWidth) : this.trailWidth;
     const trailDuration = board.trailDuration || 5;
-    const useGlow = baseWidth >= 3; // soft edges for thick trails
+    const maxTtl = Math.max(trailDuration, ball.highlighted ? 5 : 1);
+    const useGlow = baseWidth >= 3;
 
+    // Compute uniform alpha: ttl=0 means active (full opacity), ttl>0 means fading
+    const firstTtl = points[0].ttl;
+    const isFading = firstTtl > 0;
+    const alpha = isFading ? Math.min(1, firstTtl / maxTtl) * maxAlpha : maxAlpha;
+
+    // Draw one continuous path at uniform opacity
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = color;
+    ctx.lineWidth = baseWidth;
+    ctx.globalAlpha = alpha;
+
+    ctx.beginPath();
+    let moved = false;
     for (let i = 0; i < points.length - 1; i++) {
-      const ttl = points[i].ttl != null ? points[i].ttl : 0;
-      if (ttl <= 0) continue;
-      const maxTtl = Math.max(trailDuration, ball.highlighted ? 5 : 1);
-      const alpha = Math.min(1, ttl / maxTtl) * maxAlpha;
-      if (alpha < 0.005) continue;
-
-      ctx.beginPath();
-      ctx.moveTo(points[i].x, points[i].y);
+      if (!moved) { ctx.moveTo(points[i].x, points[i].y); moved = true; }
       ctx.lineTo(points[i + 1].x, points[i + 1].y);
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = baseWidth;
-      ctx.lineCap = 'round';
+    }
+    ctx.stroke();
 
-      if (useGlow) {
-        ctx.shadowColor = color;
-        ctx.shadowBlur = baseWidth * 0.6;
+    // Soft glow for thick trails
+    if (useGlow) {
+      ctx.lineWidth = baseWidth * 2.5;
+      ctx.globalAlpha = alpha * 0.15;
+      ctx.beginPath();
+      moved = false;
+      for (let i = 0; i < points.length - 1; i++) {
+        if (!moved) { ctx.moveTo(points[i].x, points[i].y); moved = true; }
+        ctx.lineTo(points[i + 1].x, points[i + 1].y);
       }
-
       ctx.stroke();
     }
 
-    if (useGlow) {
-      ctx.shadowColor = 'transparent';
-      ctx.shadowBlur = 0;
-    }
     ctx.globalAlpha = 1;
     ctx.lineCap = 'butt';
+    ctx.lineJoin = 'miter';
   }
 
   _drawPredictedPath(ball, board) {
