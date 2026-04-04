@@ -129,6 +129,16 @@ export class Renderer {
       ctx.globalAlpha = 1;
     }
 
+    // Remaining ball count above funnel
+    if (remaining > 0) {
+      ctx.font = '14px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillStyle = this.theme.binCountText;
+      ctx.globalAlpha = 0.7;
+      ctx.fillText(remaining.toLocaleString(), cx, fy - 28);
+      ctx.globalAlpha = 1;
+    }
+
     ctx.beginPath();
     ctx.moveTo(cx - 30, fy - 20);
     ctx.lineTo(cx - 5, fy + 5);
