@@ -355,9 +355,10 @@ export class Renderer {
 
     for (let i = 0; i < points.length - 1; i++) {
       // Alpha based on remaining time-to-live
-      const ttl = points[i].ttl != null ? points[i].ttl : 1;
-      const maxTtl = ball.highlighted ? Math.max(trailDuration, 5) : trailDuration;
-      const alpha = Math.max(0, (ttl / maxTtl)) * maxAlpha;
+      const ttl = points[i].ttl != null ? points[i].ttl : 0;
+      if (ttl <= 0) continue;
+      const maxTtl = Math.max(trailDuration, ball.highlighted ? 5 : 1);
+      const alpha = Math.min(1, ttl / maxTtl) * maxAlpha;
       if (alpha < 0.005) continue;
       ctx.beginPath();
       ctx.moveTo(points[i].x, points[i].y);

@@ -149,10 +149,9 @@ export class PhysicsBall {
     this.highlightColorIndex = colorIndex;
     this.highlightTimer = highlighted ? 5 : 0;
     if (highlighted) {
-      this.trailPoints = [{ x: this.visualX, y: this.visualY }];
-    } else {
-      this.trailPoints = [];
+      this.trailPoints = [{ x: this.visualX, y: this.visualY, ttl: 5 }];
     }
+    // Don't clear trailPoints on unhighlight — let them decay naturally
   }
 
   getColor() {

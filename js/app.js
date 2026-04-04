@@ -250,6 +250,10 @@ const appEl = document.querySelector('.app');
 fullscreenBtn.addEventListener('click', () => {
   appEl.classList.toggle('fullscreen');
   resizeCanvas();
+  // Clear all trail points since coordinates are now invalid
+  for (const ball of [...simulation.activeBalls, ...simulation.settledBalls, ...simulation.dropOneBalls]) {
+    ball.trailPoints = [];
+  }
 });
 
 // --- Info overlay ---
