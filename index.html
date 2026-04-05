@@ -18,41 +18,38 @@
         <button class="btn-info" id="info-btn" title="What is a Galton Board?">&#9432;</button>
       </div>
 
-      <!-- Pin Rows -->
-      <div class="control-group" title="Number of pin rows. Each row adds one more decision point (left or right). More rows produce a smoother bell curve.">
-        <label>Pin Rows</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="rows-slider">−</button>
-          <input type="range" id="rows-slider" min="1" max="25" value="10">
-          <button class="step-btn step-plus" data-slider="rows-slider">+</button>
-          <span class="value-display" id="rows-value">10</span>
+      <!-- Collapsible: Setup (open by default) -->
+      <details class="sidebar-section" open>
+        <summary>Setup</summary>
+        <div class="control-group" title="Number of pin rows. Each row adds one more decision point (left or right). More rows produce a smoother bell curve.">
+          <label>Pin Rows</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="rows-slider">−</button>
+            <input type="range" id="rows-slider" min="1" max="25" value="10">
+            <button class="step-btn step-plus" data-slider="rows-slider">+</button>
+            <span class="value-display" id="rows-value">10</span>
+          </div>
+          <label class="toggle-inline" title="Scale pins and balls to fill the canvas. Better for high row counts."><input type="checkbox" id="compact-check"> Auto-scale size</label>
         </div>
-        <label class="toggle-inline" title="Scale pins and balls to fill the canvas. Better for high row counts."><input type="checkbox" id="compact-check"> Auto-scale size</label>
-      </div>
-
-      <!-- Bias -->
-      <div class="control-group" title="Probability of a ball going right at each pin. 50/50 is a fair board. Changing this skews the distribution left or right.">
-        <label>L/R Bias</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="bias-slider">−</button>
-          <input type="range" id="bias-slider" min="0" max="100" value="50" step="1">
-          <button class="step-btn step-plus" data-slider="bias-slider">+</button>
-          <button class="step-btn bias-reset-btn" id="bias-reset" title="Reset to 50/50">⊜</button>
-          <span class="value-display" id="bias-value">50/50</span>
+        <div class="control-group" title="Probability of a ball going right at each pin. 50/50 is a fair board. Changing this skews the distribution left or right.">
+          <label>L/R Bias</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="bias-slider">−</button>
+            <input type="range" id="bias-slider" min="0" max="100" value="50" step="1">
+            <button class="step-btn step-plus" data-slider="bias-slider">+</button>
+            <button class="step-btn bias-reset-btn" id="bias-reset" title="Reset to 50/50">⊜</button>
+            <span class="value-display" id="bias-value">50/50</span>
+          </div>
+          <div class="bias-label-row">
+            <span id="bias-left">L 50%</span>
+            <span id="bias-right">R 50%</span>
+          </div>
         </div>
-        <div class="bias-label-row">
-          <span id="bias-left">L 50%</span>
-          <span id="bias-right">R 50%</span>
+        <div class="control-group" title="Total number of balls to drop. More balls produce a distribution closer to the theoretical bell curve.">
+          <label>Total Balls</label>
+          <input type="number" id="balls-input" min="1" max="100000" value="1000">
         </div>
-      </div>
-
-      <!-- Total Balls -->
-      <div class="control-group" title="Total number of balls to drop. More balls produce a distribution closer to the theoretical bell curve.">
-        <label>Total Balls</label>
-        <input type="number" id="balls-input" min="1" max="100000" value="1000">
-      </div>
-
-      <hr class="separator">
+      </details>
 
       <!-- Speed -->
       <div class="control-group" title="Animation speed multiplier. Slow down to watch individual bounces or speed up to see the distribution form quickly.">
@@ -83,8 +80,6 @@
           <span class="value-display" id="rate-value">1</span>
         </div>
       </div>
-
-      <hr class="separator">
 
       <!-- Show Statistics (above buttons for quick access) -->
       <label class="toggle-inline" title="Show live statistics: mean, standard deviation, and how well the data fits the expected distribution."><input type="checkbox" id="stats-check" checked> Show Statistics</label>
