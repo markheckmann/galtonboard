@@ -109,6 +109,12 @@ body {
   align-items: flex-start;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .btn-info {
   background: none;
   color: var(--text-heading);

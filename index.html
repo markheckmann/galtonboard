@@ -15,10 +15,13 @@
         <h1>Galton Board
           <small>Interactive Bean Machine</small>
         </h1>
-        <button class="btn-info" id="info-btn" title="What is a Galton Board?">&#9432;</button>
+        <div class="header-buttons">
+          <button class="btn-info" id="reset-settings-btn" title="Reset all settings to their default values">&#8634;</button>
+          <button class="btn-info" id="info-btn" title="What is a Galton Board?">&#9432;</button>
+        </div>
       </div>
 
-      <!-- Collapsible: Setup (open by default) -->
+      <!-- Collapsible: Setup -->
       <details class="sidebar-section">
         <summary>Setup</summary>
         <div class="control-group" title="Number of pin rows. Each row adds one more decision point (left or right). More rows produce a smoother bell curve.">
@@ -159,8 +162,6 @@
           </div>
         </div>
       </details>
-
-      <button class="btn-secondary" id="reset-settings-btn" title="Reset all settings to their default values" style="width:100%;margin-top:auto;flex-shrink:0;">Reset Settings</button>
 
     </aside>
 
