@@ -44,7 +44,6 @@ const rateValue = document.getElementById('rate-value');
 const playPauseBtn = document.getElementById('play-pause-btn');
 const resetBtn = document.getElementById('reset-btn');
 const dropOneBtn = document.getElementById('drop-one-btn');
-const sequentialCheck = document.getElementById('sequential-check');
 const biasSlider = document.getElementById('bias-slider');
 const biasValue = document.getElementById('bias-value');
 const biasLeft = document.getElementById('bias-left');
@@ -190,7 +189,7 @@ document.getElementById('reset-settings-btn').addEventListener('click', () => {
   pascalSizeSlider.value = 9; renderer.pascalFontSize = 9; pascalSizeValue.textContent = '9';
 
   // Checkboxes
-  sequentialCheck.checked = false; simulation.sequentialMode = false;
+  simulation.sequentialMode = false;
   physicsCheck.checked = true; simulation.physicsMode = true;
   compactCheck.checked = false; board.compactMode = false;
   pascalCheck.checked = false; renderer.showPascal = false;
@@ -227,10 +226,6 @@ dropOneBtn.addEventListener('click', () => {
 });
 
 // Sequential mode
-sequentialCheck.addEventListener('change', () => {
-  simulation.sequentialMode = sequentialCheck.checked;
-});
-
 // Physics mode
 physicsCheck.addEventListener('change', () => {
   simulation.physicsMode = physicsCheck.checked;
@@ -459,7 +454,6 @@ function saveStateToURL() {
   p.set('bias', biasSlider.value);
   p.set('speed', speedSlider.value);
   p.set('rate', rateSlider.value);
-  p.set('seq', sequentialCheck.checked ? '1' : '0');
   p.set('physics', physicsCheck.checked ? '1' : '0');
   p.set('compact', compactCheck.checked ? '1' : '0');
   p.set('pascal', pascalCheck.checked ? '1' : '0');
@@ -484,7 +478,6 @@ function applyURLState() {
   if (s.bias != null) { biasSlider.value = s.bias; simulation.bias = s.bias / 100; updateBiasDisplay(s.bias); }
   if (s.speed != null) { speedSlider.value = s.speed; const sp = speedSteps[s.speed]; simulation.speedMultiplier = sp; speedValue.textContent = sp + 'x'; }
   if (s.rate != null) { rateSlider.value = s.rate; simulation.dropRate = sliderToRate(s.rate); rateValue.textContent = sliderToRate(s.rate); }
-  if (s.seq != null) { sequentialCheck.checked = s.seq; simulation.sequentialMode = s.seq; }
   if (s.physics != null) { physicsCheck.checked = s.physics; simulation.physicsMode = s.physics; }
   if (s.compact != null) { compactCheck.checked = s.compact; board.compactMode = s.compact; board.recalculate(board.canvasWidth, board.canvasHeight); }
   if (s.pascal != null) { pascalCheck.checked = s.pascal; renderer.showPascal = s.pascal; }
@@ -516,7 +509,7 @@ function scheduleSaveState() {
 }
 // Attach to all controls
 [rowsSlider, biasSlider, ballsInput, speedSlider, rateSlider, trailSlider,
- labelSizeSlider, pascalSizeSlider, sequentialCheck, physicsCheck, compactCheck,
+ labelSizeSlider, pascalSizeSlider, physicsCheck, compactCheck,
  pascalCheck, pascalAbbrCheck, bgCurveCheck, distlinesCheck, curveCheck, pctCheck, statsCheck,
  themeBtn].forEach(el => el.addEventListener('change', scheduleSaveState));
 [rowsSlider, biasSlider, speedSlider, rateSlider, trailSlider, trailWidthSlider, trailAlphaSlider,
