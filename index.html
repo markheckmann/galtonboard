@@ -87,6 +87,9 @@
 
       <hr class="separator">
 
+      <!-- Show Statistics (above buttons for quick access) -->
+      <label class="toggle-inline" title="Show live statistics: mean, standard deviation, and how well the data fits the expected distribution."><input type="checkbox" id="stats-check" checked> Show Statistics</label>
+
       <!-- Play/Pause/Reset/Drop One -->
       <div class="button-row">
         <button class="btn-primary" id="play-pause-btn" title="Start or pause the simulation (Space)">Play</button>
@@ -94,75 +97,73 @@
         <button class="btn-accent" id="drop-one-btn" title="Drop a single ball, even while paused">Drop One Ball</button>
       </div>
 
-      <hr class="separator">
-
-      <!-- Trail Duration -->
-      <div class="control-group" title="How long the trail behind each ball remains visible. Trails persist after balls settle. Set to 0 to disable.">
-        <label>Trail Duration (sec)</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="trail-slider">−</button>
-          <input type="range" id="trail-slider" min="0" max="30" value="2" step="0.5">
-          <button class="step-btn step-plus" data-slider="trail-slider">+</button>
-          <span class="value-display" id="trail-value">2s</span>
+      <!-- Collapsible: Trails -->
+      <details class="sidebar-section">
+        <summary>Trails</summary>
+        <div class="control-group" title="How long the trail behind each ball remains visible. Trails persist after balls settle. Set to 0 to disable.">
+          <label>Duration (sec)</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="trail-slider">−</button>
+            <input type="range" id="trail-slider" min="0" max="30" value="2" step="0.5">
+            <button class="step-btn step-plus" data-slider="trail-slider">+</button>
+            <span class="value-display" id="trail-value">2s</span>
+          </div>
         </div>
-      </div>
-      <div class="control-group" title="Width of the trail line. Thick trails have soft, glowing edges.">
-        <label>Trail Width</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="trail-width-slider">−</button>
-          <input type="range" id="trail-width-slider" min="0.5" max="12" value="1" step="0.5">
-          <button class="step-btn step-plus" data-slider="trail-width-slider">+</button>
-          <span class="value-display" id="trail-width-value">1</span>
+        <div class="control-group" title="Width of the trail line. Thick trails have soft, glowing edges.">
+          <label>Width</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="trail-width-slider">−</button>
+            <input type="range" id="trail-width-slider" min="0.5" max="12" value="1" step="0.5">
+            <button class="step-btn step-plus" data-slider="trail-width-slider">+</button>
+            <span class="value-display" id="trail-width-value">1</span>
+          </div>
         </div>
-      </div>
-      <div class="control-group" title="Maximum opacity of the trail. Lower values make trails more transparent.">
-        <label>Trail Opacity</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="trail-alpha-slider">−</button>
-          <input type="range" id="trail-alpha-slider" min="0.05" max="1" value="0.2" step="0.05">
-          <button class="step-btn step-plus" data-slider="trail-alpha-slider">+</button>
-          <span class="value-display" id="trail-alpha-value">0.2</span>
+        <div class="control-group" title="Maximum opacity of the trail. Lower values make trails more transparent.">
+          <label>Opacity</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="trail-alpha-slider">−</button>
+            <input type="range" id="trail-alpha-slider" min="0.05" max="1" value="0.2" step="0.05">
+            <button class="step-btn step-plus" data-slider="trail-alpha-slider">+</button>
+            <span class="value-display" id="trail-alpha-value">0.2</span>
+          </div>
         </div>
-      </div>
+      </details>
 
-      <hr class="separator">
-
-      <!-- Overlay Toggles -->
-      <div class="toggle-group">
-        <label title="Show the theoretical bell curve shape for the total number of balls. This is the distribution the histogram will converge toward."><input type="checkbox" id="bgcurve-check"> Target Bell Curve</label>
-        <label title="Show a dashed line for the expected distribution based on balls settled so far. Compare it with the actual histogram."><input type="checkbox" id="curve-check"> Expected Curve</label>
-        <label title="Show mean (μ) and ±1 standard deviation (σ) lines on the histogram."><input type="checkbox" id="distlines-check"> Mean / Std Dev Lines</label>
-        <label title="Show percentages instead of counts above each bin."><input type="checkbox" id="pct-check"> Bin Percentages</label>
-        <label title="Show live statistics: mean, standard deviation, and how well the data fits the expected distribution."><input type="checkbox" id="stats-check" checked> Show Statistics</label>
-      </div>
-
-      <!-- Label sizes -->
-      <div class="control-group" title="Font size for the count or percentage labels above each bin. Set to 0 to hide.">
-        <label>Label Size</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="label-size-slider">−</button>
-          <input type="range" id="label-size-slider" min="0" max="24" value="14" step="1">
-          <button class="step-btn step-plus" data-slider="label-size-slider">+</button>
-          <span class="value-display" id="label-size-value">14</span>
+      <!-- Collapsible: Overlays -->
+      <details class="sidebar-section">
+        <summary>Overlays</summary>
+        <div class="toggle-group">
+          <label title="Show the theoretical bell curve shape for the total number of balls. This is the distribution the histogram will converge toward."><input type="checkbox" id="bgcurve-check"> Target Bell Curve</label>
+          <label title="Show a dashed line for the expected distribution based on balls settled so far. Compare it with the actual histogram."><input type="checkbox" id="curve-check"> Expected Curve</label>
+          <label title="Show mean (μ) and ±1 standard deviation (σ) lines on the histogram."><input type="checkbox" id="distlines-check"> Mean / Std Dev Lines</label>
+          <label title="Show percentages instead of counts above each bin."><input type="checkbox" id="pct-check"> Bin Percentages</label>
         </div>
-      </div>
-      <div class="control-group" title="Font size for Pascal's Triangle numbers on the pins. Set to 0 to hide.">
-        <label class="toggle-inline" title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
-        <label class="toggle-inline" title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
-        <label>Pascal Label Size</label>
-        <div class="control-row">
-          <button class="step-btn step-minus" data-slider="pascal-size-slider">−</button>
-          <input type="range" id="pascal-size-slider" min="0" max="20" value="9" step="1">
-          <button class="step-btn step-plus" data-slider="pascal-size-slider">+</button>
-          <span class="value-display" id="pascal-size-value">9</span>
-        </div>
-      </div>
+      </details>
 
-      <!-- Help -->
-      <div class="help-text">
-        Click a ball to track it. Up to 5 balls can be highlighted at once.
-        <br>Keyboard: <b>Space</b> = Play/Pause, <b>R</b> = Reset
-      </div>
+      <!-- Collapsible: Labels -->
+      <details class="sidebar-section">
+        <summary>Labels</summary>
+        <div class="control-group" title="Font size for the count or percentage labels above each bin. Set to 0 to hide.">
+          <label>Label Size</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="label-size-slider">−</button>
+            <input type="range" id="label-size-slider" min="0" max="24" value="14" step="1">
+            <button class="step-btn step-plus" data-slider="label-size-slider">+</button>
+            <span class="value-display" id="label-size-value">14</span>
+          </div>
+        </div>
+        <div class="control-group" title="Font size for Pascal's Triangle numbers on the pins. Set to 0 to hide.">
+          <label class="toggle-inline" title="Show the number of paths to each pin (binomial coefficients). These numbers explain why the center bins get more balls."><input type="checkbox" id="pascal-check"> Pascal's Triangle</label>
+          <label class="toggle-inline" title="Abbreviate large Pascal numbers using k (thousands) and m (millions)."><input type="checkbox" id="pascal-abbr-check"> Abbreviate (k/m)</label>
+          <label>Pascal Label Size</label>
+          <div class="control-row">
+            <button class="step-btn step-minus" data-slider="pascal-size-slider">−</button>
+            <input type="range" id="pascal-size-slider" min="0" max="20" value="9" step="1">
+            <button class="step-btn step-plus" data-slider="pascal-size-slider">+</button>
+            <span class="value-display" id="pascal-size-value">9</span>
+          </div>
+        </div>
+      </details>
 
       <button class="btn-secondary" id="reset-settings-btn" title="Reset all settings to their default values" style="width:100%;margin-top:4px;">Reset Settings</button>
 
