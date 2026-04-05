@@ -76,8 +76,8 @@ body {
 
 /* --- Sidebar --- */
 .sidebar {
-  width: 260px;
-  min-width: 260px;
+  width: 290px;
+  min-width: 290px;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border-sidebar);
   padding: 16px;
