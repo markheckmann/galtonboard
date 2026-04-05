@@ -104,7 +104,18 @@ biasSlider.addEventListener('change', () => {
   updateStatsDisplay();
 });
 biasSlider.addEventListener('input', () => {
-  updateBiasDisplay(parseInt(biasSlider.value));
+  // Snap to 50 when within ±2 for easy centering
+  let pct = parseInt(biasSlider.value);
+  if (Math.abs(pct - 50) <= 2) { pct = 50; biasSlider.value = 50; }
+  updateBiasDisplay(pct);
+});
+// Reset bias to 50/50
+document.getElementById('bias-reset').addEventListener('click', () => {
+  biasSlider.value = 50;
+  updateBiasDisplay(50);
+  simulation.bias = 0.5;
+  simulation.reset();
+  updateStatsDisplay();
 });
 
 // Total balls
