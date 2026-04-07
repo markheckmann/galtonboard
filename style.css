@@ -72,6 +72,7 @@ body {
 .app {
   display: flex;
   height: 100vh;
+  height: 100dvh;
 }
 
 /* --- Sidebar --- */
@@ -663,18 +664,29 @@ body.light .shortcut-toast {
 @media (max-width: 700px) {
   .app {
     flex-direction: column-reverse;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .canvas-container {
+    flex: 1 1 55%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .sidebar {
     width: 100%;
     min-width: unset;
-    max-height: 45vh;
+    flex: 0 0 45%;
+    max-height: 45%;
     min-height: 0;
     border-right: none;
     border-top: 1px solid var(--border-sidebar);
     padding: 10px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px 12px;
     align-content: start;
   }
@@ -723,6 +735,21 @@ body.light .shortcut-toast {
     padding: 8px 0;
     margin: -10px 0 0 0;
     border-bottom: 1px solid var(--border-separator);
+    flex-wrap: wrap;
+  }
+
+  .sidebar .button-row > button {
+    min-width: 0;
+    flex: 1 1 30%;
+    padding: 8px 6px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Prevent long labels like "Drop Rate (balls/sec)" from overflowing */
+  .sidebar .control-group > label {
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   /* Larger touch targets */
