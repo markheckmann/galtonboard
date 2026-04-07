@@ -662,51 +662,156 @@ body.light .shortcut-toast {
 /* --- Responsive --- */
 @media (max-width: 700px) {
   .app {
-    flex-direction: column;
+    flex-direction: column-reverse;
   }
 
   .sidebar {
     width: 100%;
     min-width: unset;
-    max-height: 40vh;
+    max-height: 45vh;
+    min-height: 0;
     border-right: none;
-    border-bottom: 1px solid var(--border-sidebar);
+    border-top: 1px solid var(--border-sidebar);
     padding: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px 12px;
+    align-content: start;
+  }
+
+  /* Allow grid/flex children to shrink so sliders don't overflow neighbors */
+  .sidebar > .control-group,
+  .sidebar > .toggle-group {
+    min-width: 0;
+  }
+
+  .sidebar .control-row {
+    min-width: 0;
+  }
+
+  .sidebar .control-row input[type="range"] {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+
+  /* Speed presets wrap instead of overflowing */
+  .sidebar .speed-presets {
+    flex-wrap: wrap;
+  }
+
+  /* Full-width spans */
+  .sidebar > .header-row,
+  .sidebar > .button-row,
+  .sidebar > .sidebar-section,
+  .sidebar > .toggle-inline,
+  .sidebar > .help-text,
+  .sidebar > hr.separator {
+    grid-column: 1 / -1;
+  }
+
+  /* Sticky action row stays visible while scrolling controls */
+  .sidebar > .button-row {
+    position: sticky;
+    top: -10px;
+    z-index: 2;
+    background: var(--bg-sidebar);
+    padding: 8px 0;
+    margin: -10px 0 0 0;
+    border-bottom: 1px solid var(--border-separator);
+  }
+
+  /* Larger touch targets */
+  input[type="range"] {
+    height: 8px;
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  button {
+    min-height: 36px;
+  }
+
+  .step-btn {
+    padding: 4px 12px;
+    min-width: 32px;
+    font-size: 16px;
+  }
+
+  .speed-preset {
+    padding: 6px 10px;
+    font-size: 12px;
+    min-height: 32px;
+  }
+
+  .toggle-group label,
+  .toggle-inline {
+    font-size: 13px;
+    padding: 4px 0;
+  }
+
+  /* Sections inside the grid still flow as block content */
+  .sidebar-section[open] > :not(summary) {
+    margin-top: 8px;
+  }
+
+  /* Stats overlay: tuck into top-left away from canvas buttons */
+  .stats-overlay {
+    top: 4px;
+    left: 4px;
+    right: auto;
+    padding: 4px 8px;
+  }
+
+  .stat-row {
+    font-size: 10px;
     gap: 8px;
   }
 
-  /* Two-column layout when sidebar is horizontal on narrow screens */
-  .sidebar > .control-group,
-  .sidebar > .toggle-group,
-  .sidebar > .stats-panel,
-  .sidebar > .button-row,
-  .sidebar > .help-text,
-  .sidebar > .separator {
-    display: contents;
+  /* Hide desktop-only shortcut toast */
+  .shortcut-toast {
+    display: none;
   }
 
+  /* Tighter canvas chrome */
+  .canvas-btn,
+  .fullscreen-btn {
+    padding: 2px 8px;
+    font-size: 16px;
+  }
+
+  .theme-btn {
+    right: 44px;
+  }
+
+  .shortcuts-wrapper {
+    right: 78px;
+  }
+}
+
+@media (max-width: 480px) {
   .sidebar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px 12px;
+    padding: 8px;
+    gap: 6px 10px;
   }
 
   .sidebar h1 {
-    grid-column: 1 / -1;
+    font-size: 16px;
   }
 
-  .sidebar hr.separator {
-    grid-column: 1 / -1;
-    display: block;
+  .sidebar h1 small {
+    display: none;
   }
 
-  .sidebar .button-row {
-    grid-column: 1 / -1;
-    display: flex;
-  }
-
-  .sidebar .help-text {
-    grid-column: 1 / -1;
-    display: block;
+  .sidebar > .button-row {
+    top: -8px;
+    margin: -8px 0 0 0;
   }
 }
