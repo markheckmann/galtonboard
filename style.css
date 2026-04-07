@@ -709,6 +709,11 @@ body.light .shortcut-toast {
     grid-column: 1 / -1;
   }
 
+  /* Reorder so action buttons sit directly above the Speed / Drop Rate sliders */
+  .sidebar > .header-row { order: -3; }
+  .sidebar > .sidebar-section:first-of-type { order: -2; }
+  .sidebar > .button-row { order: -1; }
+
   /* Sticky action row stays visible while scrolling controls */
   .sidebar > .button-row {
     position: sticky;
