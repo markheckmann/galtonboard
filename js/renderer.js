@@ -454,8 +454,8 @@ export class Renderer {
       const row = Math.min(ball.currentRow + 1, board.numRows);
       const pathStr = ball.getPathString();
       const label = ball.state === 'settled'
-        ? `Ball #${ball.id}: Settled in bin ${ball.finalBin} | Path: ${pathStr}`
-        : `Ball #${ball.id}: Row ${row}/${board.numRows} → Bin ${ball.finalBin} | ${pathStr}`;
+        ? `Ball #${ball.id}: Settled in bin ${ball.finalBin + 1} | Path: ${pathStr}`
+        : `Ball #${ball.id}: Row ${row}/${board.numRows} → Bin ${ball.finalBin + 1} | ${pathStr}`;
 
       ctx.font = '11px monospace';
       ctx.fillStyle = color;
